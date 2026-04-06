@@ -1,34 +1,17 @@
-import { useEffect, useState } from 'react'
-import { EditorLayout } from './components/Editor/EditorLayout'
-import { LoginModal } from './components/Auth/LoginModal'
-import { useAuthStore } from './stores/authStore'
-import { useProjectStore } from './stores/projectStore'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Home } from './pages/Home'
+import { EditorPage } from './pages/EditorPage'
+import { MyProjects } from './pages/MyProjects'
 
 function App() {
-  const [showLogin, setShowLogin] = useState(false)
-  const { initialize } = useAuthStore()
-  const { setCurrentProject } = useProjectStore()
-
-  useEffect(() => {
-    initialize()
-  }, [])
-
-  // 设置默认项目
-  useEffect(() => {
-    const store = useProjectStore.getState()
-    if (!store.currentProject) {
-      setCurrentProject(null)
-    }
-  }, [])
-
   return (
-    <div className="h-screen w-screen overflow-hidden">
-      <EditorLayout />
-      <LoginModal 
-        isOpen={showLogin} 
-        onClose={() => setShowLogin(false)} 
-      />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/editor/:id" element={<EditorPage />} />
+        <Route path="/my" element={<MyProjects />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

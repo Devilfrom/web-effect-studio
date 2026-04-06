@@ -27,3 +27,172 @@ body {
   width: 100%;
   height: 100%;
 }
+
+/* ========================================
+   响应式优化
+   ======================================== */
+
+/* 移动端汉堡菜单动画 */
+.mobile-menu-enter {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+.mobile-menu-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: all 200ms ease-out;
+}
+.mobile-menu-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+.mobile-menu-exit-active {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: all 200ms ease-in;
+}
+
+/* 移动端分类选择器 */
+.category-select-mobile {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ffffff60'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 28px;
+}
+
+/* 编辑器页面响应式 */
+@media (max-width: 768px) {
+  /* 编辑器和预览上下堆叠 */
+  .editor-layout {
+    flex-direction: column !important;
+  }
+  
+  /* 预览面板全宽 */
+  .preview-panel {
+    width: 100% !important;
+    min-height: 200px;
+    max-height: 40vh;
+  }
+  
+  /* 编辑器全宽 */
+  .editor-panel {
+    width: 100% !important;
+    min-height: 300px;
+  }
+  
+  /* 顶部工具栏换行 */
+  .top-bar {
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 8px;
+  }
+  
+  /* 隐藏快捷键提示 */
+  .shortcut-hints {
+    display: none !important;
+  }
+  
+  /* 标题输入框缩小 */
+  .title-input {
+    max-width: 120px !important;
+  }
+  
+  /* 按钮组缩小 */
+  .action-btn {
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+  }
+  
+  /* 控制台高度调整 */
+  .console-panel {
+    height: 80px !important;
+  }
+}
+
+/* 小屏幕下的画廊首页 */
+@media (max-width: 640px) {
+  /* 导航栏紧凑 */
+  .nav-bar {
+    padding: 12px;
+    gap: 8px;
+  }
+  
+  /* Logo 缩小 */
+  .logo-text {
+    font-size: 16px !important;
+  }
+  
+  /* 搜索框全宽 */
+  .search-box {
+    max-width: none !important;
+    flex: 1;
+  }
+  
+  /* 隐藏部分导航项 */
+  .nav-extra {
+    display: none;
+  }
+  
+  /* 精选卡片高度 */
+  .featured-card {
+    min-height: 180px;
+  }
+  
+  /* 效果卡片预览区高度 */
+  .effect-card-preview {
+    height: 120px !important;
+  }
+  
+  /* 分类侧边栏（移动端显示为下拉选择器） */
+  .category-sidebar {
+    display: none;
+  }
+  
+  /* 分类选择器容器 */
+  .category-mobile {
+    display: flex !important;
+    padding: 0 12px 12px;
+    overflow-x: auto;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 分类选择器按钮 */
+  .category-btn-mobile {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 150ms;
+  }
+  
+  .category-btn-mobile.active {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.4);
+    color: rgba(192, 132, 252, 1);
+  }
+}
+
+/* 中等屏幕 */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .category-sidebar {
+    width: 160px !important;
+  }
+  
+  .featured-card {
+    min-height: 220px;
+  }
+}
+
+/* 大屏幕 */
+@media (min-width: 1280px) {
+  .category-sidebar {
+    width: 200px !important;
+  }
+}
