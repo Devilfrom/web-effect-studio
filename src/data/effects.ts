@@ -1,9 +1,15 @@
 export type Category = "css-animation" | "canvas" | "particle" | "webgl" | "interactive" | "game" | "ui"
+export type Effect = EffectData
 export const CATEGORY_LABELS: Record<Category, string> = {
   "css-animation": "CSS 动画", "canvas": "Canvas", "particle": "粒子特效",
   "webgl": "3D/WebGL", "interactive": "交互特效", "game": "小游戏", "ui": "UI 组件",
 }
 export const CATEGORY_ICONS: Record<Category, string> = {
+  "css-animation": "✨", "canvas": "🎨", "particle": "🌟",
+  "webgl": "🎲", "interactive": "🖱️", "game": "🎮", "ui": "🧩",
+}
+export const ALL_ICONS: Record<Category | 'all', string> = {
+  "all": "🏠",
   "css-animation": "✨", "canvas": "🎨", "particle": "🌟",
   "webgl": "🎲", "interactive": "🖱️", "game": "🎮", "ui": "🧩",
 }

@@ -1,5 +1,5 @@
 /**
- * MyProjects.tsx — 我的项目页
+ * MyProjects.tsx — 我的项目页（二次元风格版）
  *
  * 功能：
  * - 展示所有已保存项目（按更新时间倒序）
@@ -17,26 +17,38 @@ import { usePreviewBlob } from '@/components/Preview/usePreviewBlob'
 import { encodeShareCode } from '@/lib/previewUtils'
 
 // ---------------------------------------------------------------------------
-// 子组件
+// 项目卡片组件
 // ---------------------------------------------------------------------------
 
-/** 项目卡片 */
 function ProjectCard({ project }: { project: Project }) {
   const { deleteProject } = useProjectStore()
   const [hovering, setHovering] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const iframeRef = { current: null as HTMLIFrameElement | null }
   const { loadPreview, clearPreviewFn } = usePreviewBlob(iframeRef, project)
 
   const handleDelete = () => {
-    if (window.confirm(`删除项目「${project.title}」？`)) {
+    if (window.confirm(`确定删除「${project.title}」？此操作不可恢复~`)) {
       deleteProject(project.id)
     }
     setShowMenu(false)
   }
 
-  /** 格式化时间 */
+  const handleShare = async () => {
+    try {
+      const code = encodeShareCode(project.html, project.css, project.js, project.title)
+      const url = `${window.location.origin}/editor/${project.id}?code=${code}`
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    } catch {
+      await navigator.clipboard.writeText(window.location.href)
+    }
+    setShowMenu(false)
+  }
+
   const formatDate = (ts?: number) => {
     if (!ts) return '未保存'
     const d = new Date(ts)
@@ -48,53 +60,58 @@ function ProjectCard({ project }: { project: Project }) {
     })
   }
 
-  /** 总字符数 */
   const charCount = project.html.length + project.css.length + project.js.length
-
-  /** HTML 标签数量 */
   const tagCount = project.html.split('<').length - 1
 
   return (
     <div
-      className="relative bg-[#13131f] rounded-xl sm:rounded-2xl overflow-hidden border border-white/5 hover:border-purple-500/40 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/10"
+      className="group glass-card overflow-hidden"
       onMouseEnter={() => { setHovering(true); loadPreview() }}
       onMouseLeave={() => { setHovering(false); clearPreviewFn() }}
     >
-      {/* 预览区（链接到编辑页） */}
-      <Link to={`/editor/${project.id}`} className="block">
-        <div className="h-28 sm:h-36 bg-[#0a0a14] relative overflow-hidden">
-          {/* 静态背景 */}
-          <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${hovering ? 'opacity-0' : 'opacity-100'}`}>
-            <div className="text-3xl sm:text-5xl opacity-10">&#9889;</div>
-          </div>
+      {/* 预览区 */}
+      <Link to={`/editor/${project.id}`} className="block relative h-32 sm:h-40 bg-gradient-to-br from-[#0a0a14] to-[#1a1025] overflow-hidden">
+        {/* 静态背景 */}
+        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${hovering ? 'opacity-0 scale-110' : 'opacity-100'}`}>
+          <div className="text-5xl opacity-10 float-animation">⚡</div>
+        </div>
 
-          {/* 悬停遮罩 */}
-          <div className={`absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity duration-200 ${hovering ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-white/20 backdrop-blur-sm text-[10px] sm:text-sm font-bold shadow-lg">
-              &#9998; 编辑
-            </div>
+        {/* 悬停遮罩 */}
+        <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-300 ${hovering ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center text-lg shadow-lg shadow-pink-500/30">
+            ✏️
           </div>
+        </div>
 
-          {/* 实时预览 iframe */}
-          {hovering && (
-            <iframe
-              ref={iframeRef as any}
-              className="absolute inset-0 w-full h-full"
-              sandbox="allow-scripts"
-              style={{ border: 'none', background: '#0a0a14' }}
-            />
-          )}
+        {/* 实时预览 iframe */}
+        {hovering && (
+          <iframe
+            ref={iframeRef as any}
+            className="absolute inset-0 w-full h-full"
+            sandbox="allow-scripts"
+            style={{ border: 'none', background: '#0a0a14' }}
+          />
+        )}
+
+        {/* 操作按钮 */}
+        <div className={`absolute top-2 right-2 flex gap-1 transition-opacity ${hovering ? 'opacity-100' : 'opacity-0'}`}>
+          <button
+            onClick={handleShare}
+            className="w-7 h-7 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center text-xs hover:bg-pink-500/30 transition-colors"
+          >
+            {copied ? '✓' : '🔗'}
+          </button>
         </div>
       </Link>
 
       {/* 信息区 */}
-      <div className="p-3 sm:p-4">
+      <div className="p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-white truncate text-sm sm:text-base">
+            <h3 className="font-bold text-white truncate text-sm sm:text-base group-hover:text-pink-300 transition-colors">
               {project.title || '未命名'}
             </h3>
-            <p className="text-[10px] sm:text-xs text-white/30 mt-0.5">
+            <p className="text-[10px] sm:text-xs text-white/40 mt-1">
               {project.updatedAt ? `更新于 ${formatDate(project.updatedAt)}` : `创建于 ${formatDate(project.createdAt)}`}
             </p>
           </div>
@@ -103,24 +120,31 @@ function ProjectCard({ project }: { project: Project }) {
           <div className="relative shrink-0">
             <button
               onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu) }}
-              className="w-6 h-6 sm:w-7 sm:h-7 rounded flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition text-xs sm:text-sm"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-colors text-sm"
             >
-              &#8942;
+              ⋯
             </button>
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-32 sm:w-36 bg-[#1a1a2e] border border-white/10 rounded-lg overflow-hidden shadow-xl z-20">
+              <div className="absolute right-0 top-full mt-1 w-36 glass rounded-xl overflow-hidden shadow-xl z-20">
                 <Link
                   to={`/editor/${project.id}`}
                   onClick={() => setShowMenu(false)}
-                  className="block px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-white/70 hover:bg-white/10"
+                  className="block px-4 py-2 text-xs sm:text-sm text-white/70 hover:bg-white/10 transition-colors"
                 >
-                  &#9998; 继续编辑
+                  ✏️ 继续编辑
                 </Link>
                 <button
-                  onClick={handleDelete}
-                  className="w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-red-400 hover:bg-red-500/10"
+                  onClick={handleShare}
+                  className="w-full text-left px-4 py-2 text-xs sm:text-sm text-white/70 hover:bg-white/10 transition-colors"
                 >
-                  &#128465; 删除
+                  🔗 复制分享链接
+                </button>
+                <div className="border-t border-white/5" />
+                <button
+                  onClick={handleDelete}
+                  className="w-full text-left px-4 py-2 text-xs sm:text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                >
+                  🗑️ 删除
                 </button>
               </div>
             )}
@@ -128,107 +152,101 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
 
         {/* 统计信息 */}
-        <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-3 text-[10px] sm:text-xs text-white/25 flex-wrap">
-          <span>{charCount.toLocaleString()} chars</span>
-          <span className="hidden xs:inline">&#128065; {tagCount} HTML 标签</span>
+        <div className="flex items-center gap-3 mt-3 text-[10px] sm:text-xs text-white/30 flex-wrap">
+          <span className="flex items-center gap-1">
+            <span>📝</span> {charCount.toLocaleString()} 字符
+          </span>
+          <span className="hidden xs:flex items-center gap-1">
+            <span>🏷️</span> {tagCount} 标签
+          </span>
         </div>
 
         {/* 操作按钮 */}
-        <div className="flex gap-2 mt-2 sm:mt-3">
+        <div className="flex gap-2 mt-3">
           <Link
             to={`/editor/${project.id}`}
-            className="flex-1 text-center py-1 sm:py-1.5 rounded-lg bg-white/10 text-[10px] sm:text-xs text-white/60 hover:bg-purple-500/30 hover:text-white transition"
+            className="flex-1 text-center py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-500/20 text-[10px] sm:text-xs text-pink-300 hover:from-pink-500/30 hover:to-purple-500/30 transition-all"
           >
-            &#9998; 编辑
+            ✏️ 编辑
           </Link>
-          <ShareButton project={project} />
+          <button
+            onClick={handleShare}
+            className="flex-1 text-center py-1.5 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] sm:text-xs text-white/50 hover:bg-white/10 transition-colors"
+          >
+            {copied ? '✓ 已复制' : '🔗 分享'}
+          </button>
         </div>
       </div>
     </div>
   )
 }
 
-/** 分享按钮 */
-function ShareButton({ project }: { project: Project }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleShare = async () => {
-    try {
-      const code = encodeShareCode(project.html, project.css, project.js, project.title)
-      const url = `${window.location.origin}/editor/${project.id}?code=${code}`
-      await navigator.clipboard.writeText(url)
-    } catch {
-      // fallback：复制当前页 URL
-      await navigator.clipboard.writeText(window.location.href)
-    }
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2500)
-  }
-
-  return (
-    <button
-      onClick={handleShare}
-      className="flex-1 text-center py-1 sm:py-1.5 rounded-lg border border-purple-500/30 text-[10px] sm:text-xs text-purple-300 hover:bg-purple-500/20 transition"
-    >
-      {copied ? '&#10004; 已复制!' : '&#128279; 分享'}
-    </button>
-  )
-}
-
 // ---------------------------------------------------------------------------
-// 页面
+// 页面主组件
 // ---------------------------------------------------------------------------
 
 export function MyProjects() {
   const { projects } = useProjectStore()
 
-  // 按更新时间倒序
   const sorted = [...projects].sort(
     (a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0)
   )
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0a1e] via-[#1a1035] to-[#0f172a] text-white pb-16">
       {/* 导航栏 */}
-      <nav className="sticky top-0 z-50 bg-[#0d0d0d]/90 backdrop-blur-md border-b border-white/10 px-3 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-4">
-        <Link to="/" className="text-white/40 hover:text-white text-xs sm:text-sm transition shrink-0">
-          &#8592; <span className="hidden sm:inline">画廊</span>
-        </Link>
-        <div className="w-px h-3 sm:h-4 bg-white/10 shrink-0" />
-        <h1 className="font-bold text-sm sm:text-base">&#128193; 我的项目</h1>
-        <span className="text-[10px] sm:text-xs text-white/30 hidden xs:inline">({projects.length} 个)</span>
+      <nav className="sticky top-0 z-50 glass border-b border-white/5">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-4">
+          <Link to="/" className="flex items-center gap-1.5 text-white/40 hover:text-pink-400 transition-colors text-xs sm:text-sm shrink-0">
+            <span>←</span>
+            <span className="hidden sm:inline">画廊</span>
+          </Link>
+          <div className="w-px h-3 sm:h-4 bg-white/10 shrink-0" />
 
-        <Link
-          to="/editor/new"
-          className="ml-auto px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg text-[10px] sm:text-sm font-bold hover:opacity-90 transition shrink-0"
-        >
-          + 新建项目
-        </Link>
+          <div className="flex items-center gap-2">
+            <span className="text-xl">📁</span>
+            <h1 className="font-bold text-sm sm:text-lg gradient-text">我的项目</h1>
+            <span className="text-[10px] sm:text-xs text-white/30 hidden xs:inline">({projects.length})</span>
+          </div>
+
+          <Link
+            to="/editor/new"
+            className="ml-auto btn-gradient text-[10px] sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4"
+          >
+            ✨ 新建
+          </Link>
+        </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      {/* 主内容区 */}
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 sm:py-8">
         {sorted.length === 0 ? (
           /* 空状态 */
           <div className="text-center py-16 sm:py-24">
-            <div className="text-4xl sm:text-6xl mb-3 sm:mb-4 opacity-30">&#128193;</div>
-            <h2 className="text-base sm:text-xl font-bold mb-1 sm:mb-2 text-white/70">还没有保存任何项目</h2>
-            <p className="text-xs sm:text-sm text-white/30 mb-4 sm:mb-6">去画廊逛逛，找个喜欢的效果开始改吧！</p>
+            <div className="text-5xl sm:text-7xl mb-4 float-animation">🌸</div>
+            <h2 className="text-base sm:text-xl font-bold text-white/60 mb-2">还没有保存任何项目</h2>
+            <p className="text-xs sm:text-sm text-white/30 mb-6">去画廊逛逛，找个喜欢的效果开始改吧~</p>
             <Link
               to="/"
-              className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-white/10 rounded-lg text-xs sm:text-sm hover:bg-white/20 transition"
+              className="inline-block px-4 sm:px-6 py-2.5 sm:py-3 glass rounded-xl text-xs sm:text-sm text-pink-300 hover:border-pink-500/30 transition-all"
             >
-              &#128269; 浏览效果库 &#8594;
+              🔍 浏览效果库 →
             </Link>
           </div>
         ) : (
           /* 项目网格 */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {sorted.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
           </div>
         )}
       </div>
+
+      {/* 页脚提示 */}
+      <footer className="fixed bottom-0 left-0 right-0 glass border-t border-white/5 py-2.5 px-4 text-center text-[10px] sm:text-xs text-white/30">
+        💡 项目数据保存在浏览器本地，清除缓存会丢失哦~
+      </footer>
     </div>
   )
 }
