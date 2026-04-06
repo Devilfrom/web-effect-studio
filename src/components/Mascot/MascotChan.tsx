@@ -1,11 +1,8 @@
 /**
- * MascotChan.tsx — 二次元看板娘组件
+ * MascotChan.tsx — 潮流看板娘组件
  * 
- * 功能：
- * - 显示可爱的看板娘角色（CSS 动画版）
- * - 点击交互显示对话
- * - 功能菜单（跳转编辑器、聊天助手等）
- * - 可拖拽移动
+ * 风格：简约可爱 chibi 风格
+ * 功能：可拖拽、点击互动、功能菜单
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react'
@@ -16,21 +13,27 @@ import { useNavigate } from 'react-router-dom'
 // ─────────────────────────────────────────
 
 const GREETINGS = [
-  '你好呀~ 欢迎来到 Web Effect Studio！',
-  '主人~ 今天想做什么特效呢？',
-  '✨ 发现宝藏前端效果库！',
-  '需要帮忙吗？点击我看看能做什么~',
-  '樱花飘落的效果好美呀~',
-  '主人加油！代码一定会跑起来的！',
+  '嗨~ 欢迎来到特效工作室！',
+  '今天也要加油哦！✨',
+  '发现宝藏特效！快来看看~',
+  '想做什么效果？告诉我~',
+  '滑动查看更多特效哦！',
 ]
 
 const CLICK_RESPONSES = [
-  '哎呀~ 主人你好调皮！',
-  '嘻嘻，戳我干嘛？',
-  '要不要试试编辑器？',
-  '想聊天的话点菜单里的"聊天助手"哦~',
-  '主人最棒了！(◕ᴗ◕✿)',
+  '哎呀~ 别戳啦！',
+  '嘻嘻，你好呀~',
+  '要试试编辑器吗？',
+  '主人最棒了！❤️',
+  '传送门已开启！',
 ]
+
+const MENU_RESPONSES: Record<string, string> = {
+  editor: '即将传送到编辑器~',
+  gallery: '返回首页看看~',
+  random: '随机一个试试！',
+  chat: '想聊什么呢？',
+}
 
 // ─────────────────────────────────────────
 // 主组件
@@ -42,29 +45,38 @@ export function MascotChan() {
   const [showMenu, setShowMenu] = useState(false)
   const [dialogText, setDialogText] = useState(GREETINGS[0])
   const [isDragging, setIsDragging] = useState(false)
-  const [position, setPosition] = useState({ x: 20, y: window.innerHeight - 280 })
+  const [position, setPosition] = useState({ x: 20, y: window.innerHeight - 200 })
+  const [isBlinking, setIsBlinking] = useState(false)
+  const [isHappy, setIsHappy] = useState(false)
+  
   const dragStartRef = useRef({ x: 0, y: 0 })
   const positionRef = useRef(position)
 
-  // ── 初始化位置 ──
+  // ── 眨眼动画 ──
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      setIsBlinking(true)
+      setTimeout(() => setIsBlinking(false), 150)
+    }, 3000 + Math.random() * 2000)
+    return () => clearInterval(blinkInterval)
+  }, [])
+
+  // ── 初始问候 ──
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDialogText(GREETINGS[Math.floor(Math.random() * GREETINGS.length)])
+      setShowDialog(true)
+      setTimeout(() => setShowDialog(false), 4000)
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // ── 位置同步 ──
   useEffect(() => {
     positionRef.current = position
   }, [position])
 
-  // ── 随机问候 ──
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!showDialog && !showMenu && !isDragging) {
-        const text = GREETINGS[Math.floor(Math.random() * GREETINGS.length)]
-        setDialogText(text)
-        setShowDialog(true)
-        setTimeout(() => setShowDialog(false), 4000)
-      }
-    }, 15000)
-    return () => clearInterval(timer)
-  }, [showDialog, showMenu, isDragging])
-
-  // ── 拖拽功能 ──
+  // ── 拖拽 ──
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (showMenu) return
     setIsDragging(true)
@@ -79,8 +91,8 @@ export function MascotChan() {
     const newX = e.clientX - dragStartRef.current.x
     const newY = e.clientY - dragStartRef.current.y
     setPosition({
-      x: Math.max(0, Math.min(window.innerWidth - 100, newX)),
-      y: Math.max(0, Math.min(window.innerHeight - 150, newY)),
+      x: Math.max(0, Math.min(window.innerWidth - 80, newX)),
+      y: Math.max(0, Math.min(window.innerHeight - 160, newY)),
     })
   }, [isDragging])
 
@@ -99,9 +111,11 @@ export function MascotChan() {
     }
   }, [isDragging, handleMouseMove, handleMouseUp])
 
-  // ── 点击响应 ──
+  // ── 点击互动 ──
   const handleClick = () => {
     if (isDragging) return
+    setIsHappy(true)
+    setTimeout(() => setIsHappy(false), 500)
     const text = CLICK_RESPONSES[Math.floor(Math.random() * CLICK_RESPONSES.length)]
     setDialogText(text)
     setShowDialog(true)
@@ -112,6 +126,13 @@ export function MascotChan() {
   const handleMenuClick = (action: string) => {
     setShowMenu(false)
     setShowDialog(false)
+    
+    if (MENU_RESPONSES[action]) {
+      setDialogText(MENU_RESPONSES[action])
+      setShowDialog(true)
+      setTimeout(() => setShowDialog(false), 2000)
+    }
+
     switch (action) {
       case 'editor':
         navigate('/editor/new')
@@ -119,124 +140,154 @@ export function MascotChan() {
       case 'gallery':
         navigate('/')
         break
-      case 'projects':
-        navigate('/my')
-        break
-      case 'chat':
-        setDialogText('主人想聊什么呢？女仆在这里等你~')
-        setShowDialog(true)
-        setTimeout(() => setShowDialog(false), 5000)
-        break
-      case 'hide':
-        // 隐藏看板娘（可以存入 localStorage）
-        setDialogText('主人再见~ 需要我的时候刷新页面就好！')
-        setShowDialog(true)
-        setTimeout(() => {
-          setShowDialog(false)
-        }, 3000)
+      case 'random':
+        const effects = [
+          'gradient-text', 'neon-text', 'fireworks', 
+          'heart-particle', 'snowfall', 'vortex'
+        ]
+        const randomId = effects[Math.floor(Math.random() * effects.length)]
+        navigate(`/editor/${randomId}`)
         break
     }
   }
 
   return (
     <div
-      className="live2d-widget"
+      className="mascot-widget"
       style={{
         left: position.x,
         top: position.y,
-        right: 'auto',
-        bottom: 'auto',
       }}
     >
       {/* 对话气泡 */}
       {showDialog && (
-        <div className="live2d-widget-dialog">
-          <span className="text-pink-300">{dialogText}</span>
+        <div className="absolute bottom-full right-0 mb-3 min-w-[180px] max-w-[280px] px-4 py-3 rounded-2xl bg-[#2a2a2a] border border-white/10 text-sm text-white/90 animate-fade-in">
+          <span>{dialogText}</span>
+          <div className="absolute -bottom-2 right-6 w-4 h-4 bg-[#2a2a2a] border-r border-b border-white/10 transform rotate-45" />
         </div>
       )}
 
       {/* 菜单 */}
-      <div className={`live2d-widget-menu ${showMenu ? 'show' : ''}`}>
-        <div className="live2d-widget-menu-item" onClick={() => handleMenuClick('editor')}>
-          <span>✨</span>
-          <span>新建效果</span>
-        </div>
-        <div className="live2d-widget-menu-item" onClick={() => handleMenuClick('gallery')}>
-          <span>🎨</span>
-          <span>效果画廊</span>
-        </div>
-        <div className="live2d-widget-menu-item" onClick={() => handleMenuClick('projects')}>
-          <span>📁</span>
-          <span>我的项目</span>
-        </div>
-        <div className="live2d-widget-menu-item" onClick={() => handleMenuClick('chat')}>
-          <span>💬</span>
-          <span>聊天助手</span>
-        </div>
-        <div className="live2d-widget-menu-item" onClick={() => handleMenuClick('hide')}>
-          <span>👋</span>
-          <span>隐藏</span>
-        </div>
+      <div className={`absolute bottom-full right-0 mb-3 w-48 bg-[#2a2a2a] rounded-2xl overflow-hidden border border-white/10 transition-all ${showMenu ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+        {[
+          { key: 'editor', icon: '✨', label: '新建特效' },
+          { key: 'gallery', icon: '🏠', label: '返回首页' },
+          { key: 'random', icon: '🎲', label: '随机特效' },
+        ].map((item) => (
+          <button
+            key={item.key}
+            onClick={() => handleMenuClick(item.key)}
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors"
+          >
+            <span>{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
       </div>
 
-      {/* 看板娘角色 - CSS 版本 */}
+      {/* 看板娘角色 - 简约 chibi 风格 */}
       <div
-        className={`relative w-24 h-32 cursor-pointer transition-transform ${isDragging ? 'scale-110' : 'hover:scale-105'}`}
+        className={`relative w-20 h-24 cursor-pointer transition-transform ${isDragging ? 'scale-110' : 'hover:scale-105'}`}
         onMouseDown={handleMouseDown}
         onClick={handleClick}
         onContextMenu={(e) => { e.preventDefault(); setShowMenu(!showMenu) }}
       >
+        {/* 发光效果 */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#fe2c55]/30 to-[#25f4ee]/30 blur-xl opacity-60" />
+        
         {/* 身体 */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-24">
-          {/* 连衣裙 */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-16 bg-gradient-to-b from-pink-400 to-pink-600 rounded-t-full" />
-          {/* 裙摆 */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-8 bg-gradient-to-b from-pink-500 to-pink-700 rounded-b-3xl" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-16">
+          {/* 衣服 - 抖音配色 */}
+          <div className="absolute inset-0 rounded-t-full bg-gradient-to-br from-[#fe2c55] via-[#a855f7] to-[#25f4ee]" />
+          {/* 衣服高光 */}
+          <div className="absolute top-1 left-2 w-4 h-4 rounded-full bg-white/20" />
         </div>
 
         {/* 头部 */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-16">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-14 h-14">
           {/* 头发后层 */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-18 h-14 bg-gradient-to-b from-purple-600 to-purple-800 rounded-t-full" style={{ width: '72px', left: '-4px' }} />
+          <div className="absolute -top-1 -left-2 -right-2 h-10 rounded-t-full bg-[#1a1a1a]" />
           
           {/* 脸 */}
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-14 h-14 bg-gradient-to-b from-amber-100 to-amber-200 rounded-full">
+          <div className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-[#ffd5c8]">
             {/* 眼睛 */}
-            <div className="absolute top-5 left-2 w-3 h-4 bg-purple-900 rounded-full">
-              <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 bg-white rounded-full" />
+            <div className={`absolute top-4 left-2 w-3 h-${isBlinking ? '0.5' : '3'} rounded-full bg-[#1a1a1a] transition-all ${isHappy ? 'translate-y-0.5' : ''}`}>
+              {!isBlinking && (
+                <>
+                  <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-white" />
+                  <div className="absolute bottom-0.5 left-1 w-1 h-1 rounded-full bg-[#25f4ee] opacity-60" />
+                </>
+              )}
             </div>
-            <div className="absolute top-5 right-2 w-3 h-4 bg-purple-900 rounded-full">
-              <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 bg-white rounded-full" />
+            <div className={`absolute top-4 right-2 w-3 h-${isBlinking ? '0.5' : '3'} rounded-full bg-[#1a1a1a] transition-all ${isHappy ? 'translate-y-0.5' : ''}`}>
+              {!isBlinking && (
+                <>
+                  <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-white" />
+                  <div className="absolute bottom-0.5 left-1 w-1 h-1 rounded-full bg-[#fe2c55] opacity-60" />
+                </>
+              )}
             </div>
+            
             {/* 腮红 */}
-            <div className="absolute top-8 left-1 w-2 h-1 bg-pink-400 rounded-full opacity-60" />
-            <div className="absolute top-8 right-1 w-2 h-1 bg-pink-400 rounded-full opacity-60" />
+            <div className="absolute top-6 left-0.5 w-2 h-1 rounded-full bg-[#fe2c55] opacity-40" />
+            <div className="absolute top-6 right-0.5 w-2 h-1 rounded-full bg-[#fe2c55] opacity-40" />
+            
             {/* 嘴巴 */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-2 h-1 bg-pink-500 rounded-full" />
+            <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 ${isHappy ? 'w-3 h-2 rounded-full bg-[#fe2c55]' : 'w-2 h-0.5 rounded-full bg-[#1a1a1a]'}`} />
           </div>
 
-          {/* 头发前层 */}
-          <div className="absolute top-0 left-0 w-6 h-8 bg-gradient-to-b from-purple-500 to-purple-700 rounded-b-full" />
-          <div className="absolute top-0 right-0 w-6 h-8 bg-gradient-to-b from-purple-500 to-purple-700 rounded-b-full" />
+          {/* 头发前层 - 刘海 */}
+          <div className="absolute -top-1 left-0 w-5 h-6 bg-[#1a1a1a] rounded-b-full" />
+          <div className="absolute -top-1 right-0 w-5 h-6 bg-[#1a1a1a] rounded-b-full" />
           
           {/* 呆毛 */}
-          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-2 h-4 bg-purple-600 rounded-full transform rotate-12" />
+          <div className="absolute -top-4 left-1/2 -translate-x-1 w-1.5 h-5 bg-[#1a1a1a] rounded-full transform -rotate-12 origin-bottom" />
         </div>
 
-        {/* 头饰 - 蝴蝶结 */}
-        <div className="absolute top-0 right-0 w-6 h-4">
-          <div className="absolute top-0 left-0 w-3 h-3 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full transform -rotate-12" />
-          <div className="absolute top-0 right-0 w-3 h-3 bg-gradient-to-r from-pink-600 to-pink-400 rounded-full transform rotate-12" />
+        {/* 头饰 - 抖音音符 */}
+        <div className="absolute top-1 -right-1 text-lg animate-pulse">
+          🎵
         </div>
 
-        {/* 呼吸动画 */}
-        <div className="absolute inset-0 animate-pulse opacity-30 pointer-events-none" />
+        {/* 手 - 挥手 */}
+        <div className={`absolute top-14 -right-2 text-2xl ${isHappy ? 'animate-wave' : ''}`}>
+          👋
+        </div>
       </div>
 
-      {/* 名字标签 */}
+      {/* 名字 */}
       <div className="text-center mt-1">
-        <span className="text-xs font-bold gradient-text">小萌</span>
+        <span className="text-[10px] font-bold bg-gradient-to-r from-[#fe2c55] to-[#25f4ee] bg-clip-text text-transparent">
+          特效酱
+        </span>
       </div>
     </div>
   )
+}
+
+// ─────────────────────────────────────────
+// CSS 动画（注入到全局）
+// ─────────────────────────────────────────
+
+const style = document.createElement('style')
+style.textContent = `
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+  @keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(20deg); }
+    75% { transform: rotate(-20deg); }
+  }
+  .animate-wave {
+    animation: wave 0.5s ease-in-out 2;
+  }
+`
+if (typeof document !== 'undefined' && !document.querySelector('#mascot-styles')) {
+  style.id = 'mascot-styles'
+  document.head.appendChild(style)
 }
