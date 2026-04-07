@@ -1,293 +1,282 @@
 /**
- * MascotChan.tsx — 潮流看板娘组件
- * 
- * 风格：简约可爱 chibi 风格
- * 功能：可拖拽、点击互动、功能菜单
+ * MascotChan.tsx — 二次元看板娘
+ * 风格：精致 chibi，粉紫配色，有表情变化
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-// ─────────────────────────────────────────
-// 对话内容
-// ─────────────────────────────────────────
-
 const GREETINGS = [
-  '嗨~ 欢迎来到特效工作室！',
-  '今天也要加油哦！✨',
-  '发现宝藏特效！快来看看~',
-  '想做什么效果？告诉我~',
-  '滑动查看更多特效哦！',
+  '欢迎来到特效实验室！(◕‿◕)',
+  '今天想做什么特效呢？✨',
+  '发现好看的效果了吗？',
+  '主人加油哦！(ﾉ◕ヮ◕)ﾉ',
+  '随机一个试试？🎲',
 ]
 
-const CLICK_RESPONSES = [
-  '哎呀~ 别戳啦！',
-  '嘻嘻，你好呀~',
-  '要试试编辑器吗？',
-  '主人最棒了！❤️',
-  '传送门已开启！',
+const CLICK_MSGS = [
+  '哎呀~ (≧▽≦)',
+  '嘻嘻，你好呀！',
+  '要去编辑器吗？',
+  '主人最棒了！❤',
+  '点我干嘛啦~',
 ]
 
-const MENU_RESPONSES: Record<string, string> = {
-  editor: '即将传送到编辑器~',
-  gallery: '返回首页看看~',
-  random: '随机一个试试！',
-  chat: '想聊什么呢？',
-}
-
-// ─────────────────────────────────────────
-// 主组件
-// ─────────────────────────────────────────
+type Mood = 'normal' | 'happy' | 'surprised' | 'shy'
 
 export function MascotChan() {
   const navigate = useNavigate()
+  const [mood, setMood] = useState<Mood>('normal')
+  const [dialog, setDialog] = useState('')
   const [showDialog, setShowDialog] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
-  const [dialogText, setDialogText] = useState(GREETINGS[0])
-  const [isDragging, setIsDragging] = useState(false)
-  const [position, setPosition] = useState({ x: 20, y: window.innerHeight - 200 })
-  const [isBlinking, setIsBlinking] = useState(false)
-  const [isHappy, setIsHappy] = useState(false)
-  
-  const dragStartRef = useRef({ x: 0, y: 0 })
-  const positionRef = useRef(position)
+  const [pos, setPos] = useState({ x: window.innerWidth - 110, y: window.innerHeight - 220 })
+  const [dragging, setDragging] = useState(false)
+  const dragRef = useRef({ ox: 0, oy: 0 })
+  const posRef = useRef(pos)
+  const dialogTimer = useRef<ReturnType<typeof setTimeout>>()
 
-  // ── 眨眼动画 ──
+  useEffect(() => { posRef.current = pos }, [pos])
+
+  // 初始问候
   useEffect(() => {
-    const blinkInterval = setInterval(() => {
-      setIsBlinking(true)
-      setTimeout(() => setIsBlinking(false), 150)
-    }, 3000 + Math.random() * 2000)
-    return () => clearInterval(blinkInterval)
+    const t = setTimeout(() => speak(GREETINGS[0], 'happy'), 1500)
+    return () => clearTimeout(t)
   }, [])
 
-  // ── 初始问候 ──
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDialogText(GREETINGS[Math.floor(Math.random() * GREETINGS.length)])
-      setShowDialog(true)
-      setTimeout(() => setShowDialog(false), 4000)
-    }, 2000)
-    return () => clearTimeout(timer)
+  const speak = useCallback((text: string, m: Mood = 'normal') => {
+    if (dialogTimer.current) clearTimeout(dialogTimer.current)
+    setDialog(text)
+    setMood(m)
+    setShowDialog(true)
+    dialogTimer.current = setTimeout(() => {
+      setShowDialog(false)
+      setMood('normal')
+    }, 3500)
   }, [])
 
-  // ── 位置同步 ──
-  useEffect(() => {
-    positionRef.current = position
-  }, [position])
-
-  // ── 拖拽 ──
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  // 拖拽
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
     if (showMenu) return
-    setIsDragging(true)
-    dragStartRef.current = {
-      x: e.clientX - positionRef.current.x,
-      y: e.clientY - positionRef.current.y,
-    }
+    setDragging(true)
+    dragRef.current = { ox: e.clientX - posRef.current.x, oy: e.clientY - posRef.current.y }
   }, [showMenu])
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return
-    const newX = e.clientX - dragStartRef.current.x
-    const newY = e.clientY - dragStartRef.current.y
-    setPosition({
-      x: Math.max(0, Math.min(window.innerWidth - 80, newX)),
-      y: Math.max(0, Math.min(window.innerHeight - 160, newY)),
-    })
-  }, [isDragging])
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false)
-  }, [])
-
   useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove)
-        window.removeEventListener('mouseup', handleMouseUp)
-      }
+    if (!dragging) return
+    const onMove = (e: MouseEvent) => {
+      setPos({
+        x: Math.max(0, Math.min(window.innerWidth - 90, e.clientX - dragRef.current.ox)),
+        y: Math.max(0, Math.min(window.innerHeight - 180, e.clientY - dragRef.current.oy)),
+      })
     }
-  }, [isDragging, handleMouseMove, handleMouseUp])
+    const onUp = () => setDragging(false)
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
+  }, [dragging])
 
-  // ── 点击互动 ──
-  const handleClick = () => {
-    if (isDragging) return
-    setIsHappy(true)
-    setTimeout(() => setIsHappy(false), 500)
-    const text = CLICK_RESPONSES[Math.floor(Math.random() * CLICK_RESPONSES.length)]
-    setDialogText(text)
-    setShowDialog(true)
-    setTimeout(() => setShowDialog(false), 3000)
+  const onClick = () => {
+    if (dragging) return
+    speak(CLICK_MSGS[Math.floor(Math.random() * CLICK_MSGS.length)], 'happy')
   }
 
-  // ── 菜单操作 ──
-  const handleMenuClick = (action: string) => {
+  const onMenu = (action: string) => {
     setShowMenu(false)
-    setShowDialog(false)
-    
-    if (MENU_RESPONSES[action]) {
-      setDialogText(MENU_RESPONSES[action])
-      setShowDialog(true)
-      setTimeout(() => setShowDialog(false), 2000)
+    if (action === 'editor') { speak('传送中~', 'happy'); setTimeout(() => navigate('/editor/new'), 500) }
+    if (action === 'home')   { speak('回首页啦！', 'normal'); setTimeout(() => navigate('/'), 500) }
+    if (action === 'random') {
+      const { effects } = require('@/data/effects')
+      const r = effects[Math.floor(Math.random() * effects.length)]
+      speak('随机到了！', 'surprised')
+      setTimeout(() => navigate(`/editor/${r.id}`), 500)
     }
+  }
 
-    switch (action) {
-      case 'editor':
-        navigate('/editor/new')
-        break
-      case 'gallery':
-        navigate('/')
-        break
-      case 'random':
-        const effects = [
-          'gradient-text', 'neon-text', 'fireworks', 
-          'heart-particle', 'snowfall', 'vortex'
-        ]
-        const randomId = effects[Math.floor(Math.random() * effects.length)]
-        navigate(`/editor/${randomId}`)
-        break
-    }
+  // ── 表情 SVG ──
+  const Eyes = () => {
+    if (mood === 'happy') return (
+      <>
+        <path d="M28 38 Q31 34 34 38" stroke="#2d1b4e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        <path d="M46 38 Q49 34 52 38" stroke="#2d1b4e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      </>
+    )
+    if (mood === 'surprised') return (
+      <>
+        <ellipse cx="31" cy="38" rx="5" ry="6" fill="#2d1b4e"/>
+        <ellipse cx="49" cy="38" rx="5" ry="6" fill="#2d1b4e"/>
+        <circle cx="33" cy="36" r="2" fill="white"/>
+        <circle cx="51" cy="36" r="2" fill="white"/>
+      </>
+    )
+    if (mood === 'shy') return (
+      <>
+        <path d="M27 38 Q31 35 35 38" stroke="#2d1b4e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        <path d="M45 38 Q49 35 53 38" stroke="#2d1b4e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        <ellipse cx="24" cy="43" rx="5" ry="3" fill="#ff9eb5" opacity="0.6"/>
+        <ellipse cx="56" cy="43" rx="5" ry="3" fill="#ff9eb5" opacity="0.6"/>
+      </>
+    )
+    // normal
+    return (
+      <>
+        <ellipse cx="31" cy="38" rx="5" ry="5.5" fill="#2d1b4e"/>
+        <ellipse cx="49" cy="38" rx="5" ry="5.5" fill="#2d1b4e"/>
+        <circle cx="33" cy="36" r="2" fill="white"/>
+        <circle cx="51" cy="36" r="2" fill="white"/>
+        <circle cx="29" cy="40" r="1" fill="#a78bfa" opacity="0.6"/>
+        <circle cx="47" cy="40" r="1" fill="#a78bfa" opacity="0.6"/>
+      </>
+    )
+  }
+
+  const Mouth = () => {
+    if (mood === 'happy') return <path d="M34 50 Q40 56 46 50" stroke="#e879a0" strokeWidth="2" fill="none" strokeLinecap="round"/>
+    if (mood === 'surprised') return <ellipse cx="40" cy="52" rx="4" ry="5" fill="#e879a0"/>
+    return <path d="M36 51 Q40 54 44 51" stroke="#e879a0" strokeWidth="2" fill="none" strokeLinecap="round"/>
   }
 
   return (
-    <div
-      className="mascot-widget"
-      style={{
-        left: position.x,
-        top: position.y,
-      }}
-    >
+    <div className="mascot-widget" style={{ left: pos.x, top: pos.y, position: 'fixed' }}>
       {/* 对话气泡 */}
       {showDialog && (
-        <div className="absolute bottom-full right-0 mb-3 min-w-[180px] max-w-[280px] px-4 py-3 rounded-2xl bg-[#2a2a2a] border border-white/10 text-sm text-white/90 animate-fade-in">
-          <span>{dialogText}</span>
-          <div className="absolute -bottom-2 right-6 w-4 h-4 bg-[#2a2a2a] border-r border-b border-white/10 transform rotate-45" />
+        <div
+          className="absolute bottom-full right-0 mb-3 px-4 py-2.5 rounded-2xl text-xs text-white/90 whitespace-nowrap animate-fade-in-up"
+          style={{
+            background: 'rgba(26,21,48,0.95)',
+            border: '1px solid rgba(255,107,157,0.3)',
+            boxShadow: '0 8px 30px rgba(168,85,247,0.2)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          {dialog}
+          <div
+            className="absolute -bottom-2 right-6 w-3 h-3 rotate-45"
+            style={{ background: 'rgba(26,21,48,0.95)', borderRight: '1px solid rgba(255,107,157,0.3)', borderBottom: '1px solid rgba(255,107,157,0.3)' }}
+          />
         </div>
       )}
 
       {/* 菜单 */}
-      <div className={`absolute bottom-full right-0 mb-3 w-48 bg-[#2a2a2a] rounded-2xl overflow-hidden border border-white/10 transition-all ${showMenu ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-        {[
-          { key: 'editor', icon: '✨', label: '新建特效' },
-          { key: 'gallery', icon: '🏠', label: '返回首页' },
-          { key: 'random', icon: '🎲', label: '随机特效' },
-        ].map((item) => (
-          <button
-            key={item.key}
-            onClick={() => handleMenuClick(item.key)}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors"
-          >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* 看板娘角色 - 简约 chibi 风格 */}
-      <div
-        className={`relative w-20 h-24 cursor-pointer transition-transform ${isDragging ? 'scale-110' : 'hover:scale-105'}`}
-        onMouseDown={handleMouseDown}
-        onClick={handleClick}
-        onContextMenu={(e) => { e.preventDefault(); setShowMenu(!showMenu) }}
-      >
-        {/* 发光效果 */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#fe2c55]/30 to-[#25f4ee]/30 blur-xl opacity-60" />
-        
-        {/* 身体 */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-16">
-          {/* 衣服 - 抖音配色 */}
-          <div className="absolute inset-0 rounded-t-full bg-gradient-to-br from-[#fe2c55] via-[#a855f7] to-[#25f4ee]" />
-          {/* 衣服高光 */}
-          <div className="absolute top-1 left-2 w-4 h-4 rounded-full bg-white/20" />
+      {showMenu && (
+        <div
+          className="absolute bottom-full right-0 mb-3 w-44 rounded-2xl overflow-hidden animate-fade-in-up"
+          style={{ background: 'rgba(26,21,48,0.97)', border: '1px solid rgba(255,107,157,0.2)', boxShadow: '0 16px 40px rgba(168,85,247,0.25)' }}
+        >
+          {[
+            { key: 'editor', icon: '✨', label: '新建特效' },
+            { key: 'home',   icon: '🏠', label: '返回首页' },
+            { key: 'random', icon: '🎲', label: '随机特效' },
+          ].map(item => (
+            <button
+              key={item.key}
+              onClick={() => onMenu(item.key)}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors"
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
         </div>
+      )}
 
-        {/* 头部 */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-14 h-14">
+      {/* 角色 SVG */}
+      <div
+        className={`relative select-none ${dragging ? 'scale-110' : 'hover:scale-105'} transition-transform`}
+        style={{ cursor: dragging ? 'grabbing' : 'grab' }}
+        onMouseDown={onMouseDown}
+        onClick={onClick}
+        onContextMenu={e => { e.preventDefault(); setShowMenu(v => !v) }}
+      >
+        <svg width="88" height="120" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hairGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#c084fc"/>
+              <stop offset="100%" stopColor="#818cf8"/>
+            </linearGradient>
+            <linearGradient id="dressGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f472b6"/>
+              <stop offset="100%" stopColor="#a855f7"/>
+            </linearGradient>
+            <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fde8d8"/>
+              <stop offset="100%" stopColor="#fcd5b5"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          {/* 发光光晕 */}
+          <ellipse cx="40" cy="60" rx="32" ry="50" fill="url(#dressGrad)" opacity="0.08" filter="url(#glow)"/>
+
+          {/* 裙子 */}
+          <path d="M20 80 Q15 110 10 118 L70 118 Q65 110 60 80 Z" fill="url(#dressGrad)" opacity="0.9"/>
+          <path d="M22 80 Q18 100 14 115 L66 115 Q62 100 58 80 Z" fill="white" opacity="0.12"/>
+
+          {/* 身体 */}
+          <rect x="24" y="68" width="32" height="18" rx="8" fill="url(#dressGrad)"/>
+
+          {/* 蝴蝶结 */}
+          <path d="M34 70 Q40 66 46 70 Q40 74 34 70Z" fill="#fce7f3"/>
+          <circle cx="40" cy="70" r="2.5" fill="#f9a8d4"/>
+
+          {/* 手臂 */}
+          <path d="M24 72 Q14 78 12 88" stroke="url(#skinGrad)" strokeWidth="7" strokeLinecap="round"/>
+          <path d="M56 72 Q66 78 68 88" stroke="url(#skinGrad)" strokeWidth="7" strokeLinecap="round"/>
+
+          {/* 手 */}
+          <circle cx="11" cy="90" r="5" fill="#fde8d8"/>
+          <circle cx="69" cy="90" r="5" fill="#fde8d8"/>
+
           {/* 头发后层 */}
-          <div className="absolute -top-1 -left-2 -right-2 h-10 rounded-t-full bg-[#1a1a1a]" />
-          
+          <ellipse cx="40" cy="26" rx="22" ry="24" fill="url(#hairGrad)"/>
+          <path d="M18 26 Q14 50 16 65" stroke="url(#hairGrad)" strokeWidth="10" strokeLinecap="round"/>
+          <path d="M62 26 Q66 50 64 65" stroke="url(#hairGrad)" strokeWidth="10" strokeLinecap="round"/>
+
           {/* 脸 */}
-          <div className="absolute top-1 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-[#ffd5c8]">
-            {/* 眼睛 */}
-            <div className={`absolute top-4 left-2 w-3 h-${isBlinking ? '0.5' : '3'} rounded-full bg-[#1a1a1a] transition-all ${isHappy ? 'translate-y-0.5' : ''}`}>
-              {!isBlinking && (
-                <>
-                  <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-white" />
-                  <div className="absolute bottom-0.5 left-1 w-1 h-1 rounded-full bg-[#25f4ee] opacity-60" />
-                </>
-              )}
-            </div>
-            <div className={`absolute top-4 right-2 w-3 h-${isBlinking ? '0.5' : '3'} rounded-full bg-[#1a1a1a] transition-all ${isHappy ? 'translate-y-0.5' : ''}`}>
-              {!isBlinking && (
-                <>
-                  <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-white" />
-                  <div className="absolute bottom-0.5 left-1 w-1 h-1 rounded-full bg-[#fe2c55] opacity-60" />
-                </>
-              )}
-            </div>
-            
-            {/* 腮红 */}
-            <div className="absolute top-6 left-0.5 w-2 h-1 rounded-full bg-[#fe2c55] opacity-40" />
-            <div className="absolute top-6 right-0.5 w-2 h-1 rounded-full bg-[#fe2c55] opacity-40" />
-            
-            {/* 嘴巴 */}
-            <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 ${isHappy ? 'w-3 h-2 rounded-full bg-[#fe2c55]' : 'w-2 h-0.5 rounded-full bg-[#1a1a1a]'}`} />
-          </div>
+          <ellipse cx="40" cy="32" rx="18" ry="19" fill="url(#skinGrad)"/>
+
+          {/* 耳朵 */}
+          <ellipse cx="22" cy="34" rx="4" ry="5" fill="#fde8d8"/>
+          <ellipse cx="58" cy="34" rx="4" ry="5" fill="#fde8d8"/>
+
+          {/* 表情 */}
+          <Eyes/>
+          <Mouth/>
+
+          {/* 腮红（常驻） */}
+          {mood !== 'shy' && (
+            <>
+              <ellipse cx="25" cy="44" rx="5" ry="3" fill="#ffb3c6" opacity="0.45"/>
+              <ellipse cx="55" cy="44" rx="5" ry="3" fill="#ffb3c6" opacity="0.45"/>
+            </>
+          )}
 
           {/* 头发前层 - 刘海 */}
-          <div className="absolute -top-1 left-0 w-5 h-6 bg-[#1a1a1a] rounded-b-full" />
-          <div className="absolute -top-1 right-0 w-5 h-6 bg-[#1a1a1a] rounded-b-full" />
-          
+          <path d="M22 18 Q24 8 40 6 Q56 8 58 18 Q50 14 40 14 Q30 14 22 18Z" fill="url(#hairGrad)"/>
+          <path d="M22 18 Q20 28 22 34" fill="url(#hairGrad)"/>
+          <path d="M58 18 Q60 28 58 34" fill="url(#hairGrad)"/>
+
           {/* 呆毛 */}
-          <div className="absolute -top-4 left-1/2 -translate-x-1 w-1.5 h-5 bg-[#1a1a1a] rounded-full transform -rotate-12 origin-bottom" />
-        </div>
+          <path d="M40 6 Q44 -4 48 2" stroke="url(#hairGrad)" strokeWidth="3" strokeLinecap="round" fill="none"/>
+          <circle cx="49" cy="2" r="3" fill="#f472b6"/>
 
-        {/* 头饰 - 抖音音符 */}
-        <div className="absolute top-1 -right-1 text-lg animate-pulse">
-          🎵
-        </div>
+          {/* 发饰 - 星星 */}
+          <path d="M55 10 L56.5 13 L60 13 L57.5 15 L58.5 18.5 L55 16.5 L51.5 18.5 L52.5 15 L50 13 L53.5 13Z" fill="#fbbf24" opacity="0.9"/>
+        </svg>
 
-        {/* 手 - 挥手 */}
-        <div className={`absolute top-14 -right-2 text-2xl ${isHappy ? 'animate-wave' : ''}`}>
-          👋
+        {/* 名字 */}
+        <div className="text-center mt-1">
+          <span
+            className="text-[11px] font-bold"
+            style={{ background: 'linear-gradient(135deg,#ff6b9d,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+          >
+            特效酱
+          </span>
         </div>
-      </div>
-
-      {/* 名字 */}
-      <div className="text-center mt-1">
-        <span className="text-[10px] font-bold bg-gradient-to-r from-[#fe2c55] to-[#25f4ee] bg-clip-text text-transparent">
-          特效酱
-        </span>
       </div>
     </div>
   )
-}
-
-// ─────────────────────────────────────────
-// CSS 动画（注入到全局）
-// ─────────────────────────────────────────
-
-const style = document.createElement('style')
-style.textContent = `
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-  }
-  @keyframes wave {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(20deg); }
-    75% { transform: rotate(-20deg); }
-  }
-  .animate-wave {
-    animation: wave 0.5s ease-in-out 2;
-  }
-`
-if (typeof document !== 'undefined' && !document.querySelector('#mascot-styles')) {
-  style.id = 'mascot-styles'
-  document.head.appendChild(style)
 }
