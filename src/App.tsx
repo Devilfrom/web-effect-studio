@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { EditorPage } from './pages/EditorPage'
 import { MyProjects } from './pages/MyProjects'
+import { UserProfile } from './pages/UserProfile'
 import { StarfieldBackground } from './components/Effects/StarfieldBackground'
 import { SakuraEffect } from './components/Effects/SakuraEffect'
 import { MascotChan } from './components/Mascot/MascotChan'
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/editor/:id" element={<EditorPage />} />
           <Route path="/my" element={<MyProjects />} />
+          <Route path="/profile" element={<UserProfile />} />
         </Routes>
       </div>
       
