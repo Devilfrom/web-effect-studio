@@ -6,7 +6,6 @@
 import { useState, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { effects, CATEGORY_LABELS, ALL_ICONS } from '@/data/effects'
-import { usePreviewBlob } from '@/components/Preview/usePreviewBlob'
 
 type Category = 'css-animation' | 'canvas' | 'particle' | 'webgl' | 'interactive' | 'game' | 'ui'
 
@@ -39,45 +38,96 @@ function EffectCard({ effect, onFork }: {
   const [hovering, setHovering] = useState(false)
   const [liked, setLiked] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
-  const { loadPreview, clearPreviewFn } = usePreviewBlob(iframeRef, effect)
+  const blobUrlRef = useRef<string>('')
+
+  // 直接加载预览（不用 hook）
+  const loadPreview = () => {
+    if (!iframeRef.current) return
+    
+    // 构建完整的 HTML
+    const fullHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; background: #0a0a0a; overflow: hidden; }
+    ${effect.css}
+  </style>
+</head>
+<body>
+  ${effect.html}
+  <script>try { ${effect.js} } catch(e) {}</script>
+</body>
+</html>`
+
+    // 释放旧的 Blob
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current)
+    }
+
+    // 创建新的 Blob
+    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' })
+    blobUrlRef.current = URL.createObjectURL(blob)
+    iframeRef.current.src = blobUrlRef.current
+  }
+
+  const clearPreview = () => {
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current)
+      blobUrlRef.current = ''
+    }
+    if (iframeRef.current) {
+      iframeRef.current.src = 'about:blank'
+    }
+  }
+
+  const handleMouseEnter = () => {
+    setHovering(true)
+    loadPreview()
+  }
+
+  const handleMouseLeave = () => {
+    setHovering(false)
+    clearPreview()
+  }
 
   return (
     <div
       className="effect-card group"
-      onMouseEnter={() => { setHovering(true); loadPreview() }}
-      onMouseLeave={() => { setHovering(false); clearPreviewFn() }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => navigate(`/editor/${effect.id}`)}
     >
       {/* 预览区 */}
-      <div className="relative h-40 bg-[#0d0a1a] overflow-hidden">
+      <div className="relative h-32 sm:h-40 bg-[#0d0a1a] overflow-hidden">
         {/* 静态背景 */}
         <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${hovering ? 'opacity-0 scale-110' : 'opacity-100'}`}>
-          <div className="text-6xl opacity-10 animate-float">
+          <div className="text-4xl sm:text-6xl opacity-10 animate-float">
             {ALL_ICONS[effect.category as Category] || '✨'}
           </div>
         </div>
 
         {/* 实时预览 */}
-        {hovering && (
-          <iframe
-            ref={iframeRef}
-            className="absolute inset-0 w-full h-full"
-            sandbox="allow-scripts"
-            style={{ border: 'none' }}
-          />
-        )}
+        <iframe
+          ref={iframeRef}
+          className="absolute inset-0 w-full h-full"
+          sandbox="allow-scripts allow-same-origin"
+          style={{ border: 'none', opacity: hovering ? 1 : 0, transition: 'opacity 0.3s' }}
+        />
 
-        {/* 悬停遮罩 */}
-        <div className={`absolute inset-0 bg-black/40 flex items-center justify-center gap-3 transition-opacity ${hovering ? 'opacity-100' : 'opacity-0'}`}>
+        {/* 悬停遮罩 + 操作按钮 */}
+        <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end justify-center gap-2 sm:gap-3 pb-3 transition-opacity duration-300 ${hovering ? 'opacity-100' : 'opacity-0'}`}>
           <button
             onClick={(e) => { e.stopPropagation(); navigate(`/editor/${effect.id}`) }}
-            className="px-4 py-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-xs font-bold shadow-lg"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-[10px] sm:text-xs font-bold shadow-lg hover:scale-105 transition-transform"
           >
-            ▶ 预览
+            ▶ 编辑
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onFork(effect.id) }}
-            className="px-4 py-2 rounded-full bg-white/10 backdrop-blur text-xs font-bold border border-white/20"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/10 backdrop-blur text-[10px] sm:text-xs font-bold border border-white/20 hover:bg-white/20 transition-colors"
           >
             ✿ Fork
           </button>
@@ -100,30 +150,30 @@ function EffectCard({ effect, onFork }: {
       </div>
 
       {/* 信息区 */}
-      <div className="p-4">
-        <h3 className="font-bold text-sm text-white group-hover:grad-warm-text transition-all line-clamp-1">
+      <div className="p-3 sm:p-4">
+        <h3 className="font-bold text-xs sm:text-sm text-white group-hover:grad-warm-text transition-all line-clamp-1">
           {effect.title}
         </h3>
-        <p className="text-xs text-white/40 mt-1 line-clamp-2 leading-relaxed">
+        <p className="text-[10px] sm:text-xs text-white/40 mt-1 line-clamp-2 leading-relaxed">
           {effect.description}
         </p>
 
         {/* 标签 */}
-        <div className="flex gap-1.5 mt-3 flex-wrap">
+        <div className="flex gap-1.5 mt-2 sm:mt-3 flex-wrap">
           {effect.tags.slice(0, 2).map((tag: string) => (
-            <span key={tag} className="px-2 py-0.5 rounded-full text-[10px] bg-white/5 border border-white/8 text-white/40">
+            <span key={tag} className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] bg-white/5 border border-white/8 text-white/40">
               #{tag}
             </span>
           ))}
         </div>
 
         {/* 数据 */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
-          <div className="flex items-center gap-3 text-[11px] text-white/35">
+        <div className="flex items-center justify-between mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-white/5">
+          <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-white/35">
             <span>👁 {effect.viewCount.toLocaleString()}</span>
             <span>❤️ {(effect.likeCount + (liked ? 1 : 0)).toLocaleString()}</span>
           </div>
-          <span className="text-[10px] text-white/25">{effect.authorName}</span>
+          <span className="text-[9px] sm:text-[10px] text-white/25">{effect.authorName}</span>
         </div>
       </div>
     </div>
@@ -138,36 +188,78 @@ function HeroCard({ effect }: { effect: typeof effects[0] }) {
   const navigate = useNavigate()
   const [hovering, setHovering] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
-  const { loadPreview, clearPreviewFn } = usePreviewBlob(iframeRef, effect)
+  const blobUrlRef = useRef<string>('')
+
+  const loadPreview = () => {
+    if (!iframeRef.current) return
+    
+    const fullHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; background: #0a0a0a; overflow: hidden; }
+    ${effect.css}
+  </style>
+</head>
+<body>
+  ${effect.html}
+  <script>try { ${effect.js} } catch(e) {}</script>
+</body>
+</html>`
+
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current)
+    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' })
+    blobUrlRef.current = URL.createObjectURL(blob)
+    iframeRef.current.src = blobUrlRef.current
+  }
+
+  const clearPreview = () => {
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current)
+      blobUrlRef.current = ''
+    }
+    if (iframeRef.current) iframeRef.current.src = 'about:blank'
+  }
+
+  const handleMouseEnter = () => {
+    setHovering(true)
+    loadPreview()
+  }
+
+  const handleMouseLeave = () => {
+    setHovering(false)
+    clearPreview()
+  }
 
   return (
     <div
       className="hero-card cursor-pointer"
-      onMouseEnter={() => { setHovering(true); loadPreview() }}
-      onMouseLeave={() => { setHovering(false); clearPreviewFn() }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => navigate(`/editor/${effect.id}`)}
     >
       {/* 预览区 */}
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-40 sm:h-52 overflow-hidden">
         {/* 背景装饰 */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/60 via-pink-900/40 to-cyan-900/30" />
-        <div className="absolute top-0 right-0 w-48 h-48 bg-pink-500/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/15 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-32 sm:w-48 h-32 sm:h-48 bg-pink-500/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-purple-500/15 rounded-full blur-3xl" />
 
-        {/* 图标 */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-8">
-          <div className="text-9xl">{ALL_ICONS[effect.category as Category] || '✨'}</div>
+        {/* 图标（预览未就绪时显示） */}
+        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${hovering ? 'opacity-0' : 'opacity-100'}`}>
+          <div className="text-6xl sm:text-9xl opacity-10">{ALL_ICONS[effect.category as Category] || '✨'}</div>
         </div>
 
         {/* 实时预览 */}
-        {hovering && (
-          <iframe
-            ref={iframeRef}
-            className="absolute inset-0 w-full h-full"
-            sandbox="allow-scripts"
-            style={{ border: 'none' }}
-          />
-        )}
+        <iframe
+          ref={iframeRef}
+          className="absolute inset-0 w-full h-full"
+          sandbox="allow-scripts allow-same-origin"
+          style={{ border: 'none', opacity: hovering ? 1 : 0, transition: 'opacity 0.3s' }}
+        />
 
         {/* 渐变遮罩 */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#1a1530] via-transparent to-transparent" />
@@ -181,18 +273,25 @@ function HeroCard({ effect }: { effect: typeof effects[0] }) {
             {CATEGORY_LABELS[effect.category as Category]}
           </span>
         </div>
+
+        {/* 悬停操作提示 */}
+        {hovering && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/60 backdrop-blur text-xs font-medium">
+            点击查看详情 →
+          </div>
+        )}
       </div>
 
       {/* 信息 */}
-      <div className="p-5">
-        <h2 className="font-bold text-xl grad-text mb-2">{effect.title}</h2>
-        <p className="text-sm text-white/55 leading-relaxed mb-4">{effect.description}</p>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-xs text-white/40">
+      <div className="p-4 sm:p-5">
+        <h2 className="font-bold text-lg sm:text-xl grad-text mb-1.5 sm:mb-2">{effect.title}</h2>
+        <p className="text-xs sm:text-sm text-white/55 leading-relaxed mb-3 sm:mb-4 line-clamp-2">{effect.description}</p>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-white/40">
             <span>👁 {effect.viewCount.toLocaleString()}</span>
             <span>❤️ {effect.likeCount.toLocaleString()}</span>
           </div>
-          <button className="btn-primary text-xs py-2 px-5">
+          <button className="btn-primary text-[10px] sm:text-xs py-1.5 sm:py-2 px-4 sm:px-5">
             立即体验 →
           </button>
         </div>
@@ -254,12 +353,12 @@ export function Home() {
           </Link>
 
           {/* 搜索 */}
-          <div className="search-wrap">
+          <div className="search-wrap hidden sm:block">
             <span className="icon">🔍</span>
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="搜索特效名称、标签..."
+              placeholder="搜索特效..."
               className="search-input"
             />
           </div>
@@ -279,7 +378,7 @@ export function Home() {
         </div>
 
         {/* 分类标签 */}
-        <div className="cat-tabs pb-2 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="cat-tabs pb-2 px-2 sm:px-4 md:px-6 max-w-7xl mx-auto">
           {CATS.map(cat => {
             const count = cat.key === 'all'
               ? effects.length
@@ -291,8 +390,8 @@ export function Home() {
                 className={`cat-tab ${activeCategory === cat.key ? 'active' : ''}`}
               >
                 <span>{cat.icon}</span>
-                <span className="ml-1">{cat.label}</span>
-                <span className="ml-1.5 text-[10px] opacity-50">{count}</span>
+                <span className="ml-1 hidden sm:inline">{cat.label}</span>
+                <span className="ml-1 text-[10px] opacity-50">{count}</span>
               </button>
             )
           })}
@@ -300,7 +399,7 @@ export function Home() {
       </header>
 
       {/* ── 主体 ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex gap-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 flex gap-4 sm:gap-6 relative z-10">
         {/* 左侧边栏（桌面端） */}
         <aside className="sidebar hidden lg:block shrink-0">
           <div className="sticky top-32 space-y-1">
@@ -360,21 +459,21 @@ export function Home() {
           )}
 
           {/* 排序 + 数量 */}
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-4 sm:mb-5 flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <h2 className="font-bold text-sm text-white/80">
+              <h2 className="font-bold text-xs sm:text-sm text-white/80">
                 {activeCategory === 'all' ? '全部特效' : CATS.find(c => c.key === activeCategory)?.label}
               </h2>
-              <span className="text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] sm:text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded-full">
                 {filtered.length}
               </span>
             </div>
-            <div className="flex items-center gap-1 bg-white/5 rounded-full p-1">
+            <div className="flex items-center gap-1 bg-white/5 rounded-full p-0.5 sm:p-1">
               {SORTS.map(s => (
                 <button
                   key={s.key}
                   onClick={() => setSort(s.key)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium transition-all ${
                     sort === s.key
                       ? 'bg-gradient-to-r from-pink-500/80 to-purple-500/80 text-white'
                       : 'text-white/40 hover:text-white/70'
@@ -393,7 +492,7 @@ export function Home() {
               <p className="text-white/40">没有找到相关特效~</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {filtered.map(e => (
                 <EffectCard key={e.id} effect={e} onFork={handleFork} />
               ))}

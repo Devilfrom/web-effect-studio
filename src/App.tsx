@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { EditorPage } from './pages/EditorPage'
 import { MyProjects } from './pages/MyProjects'
@@ -7,14 +7,18 @@ import { StarfieldBackground } from './components/Effects/StarfieldBackground'
 import { SakuraEffect } from './components/Effects/SakuraEffect'
 import { MascotChan } from './components/Mascot/MascotChan'
 
-function App() {
+function AppContent() {
+  const location = useLocation()
+  // 只在首页显示樱花效果（编辑器页面不需要，影响预览）
+  const showSakura = location.pathname === '/'
+  
   return (
-    <BrowserRouter>
+    <>
       {/* 星空背景 */}
       <StarfieldBackground />
       
-      {/* 樱花飘落效果 */}
-      <SakuraEffect count={15} />
+      {/* 樱花飘落效果 - 仅首页 */}
+      {showSakura && <SakuraEffect count={15} />}
       
       {/* 主内容 */}
       <div className="relative z-10">
@@ -28,6 +32,14 @@ function App() {
       
       {/* 看板娘 */}
       <MascotChan />
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   )
 }

@@ -97,6 +97,7 @@ export function EditorPage() {
   const [refreshKey, setRefreshKey] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [splitRatio, setSplitRatio] = useState(50) // 预览占比百分比
 
   // ── 预览刷新引用的最新代码（useRef 避免闭包问题） ──
   const codeRef = useRef({ html, css, js, title })
@@ -221,7 +222,7 @@ export function EditorPage() {
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-[#0f0a1e] via-[#1a1035] to-[#0f172a] text-white overflow-hidden">
       {/* ── 顶部工具栏 ── */}
-      <div className="glass border-b border-white/5 px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 sm:gap-4 flex-wrap shrink-0">
+      <div className="shrink-0 glass border-b border-white/5 px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 sm:gap-4 flex-wrap">
         {/* 返回 */}
         <Link to="/" className="flex items-center gap-2 text-white/40 hover:text-pink-400 transition-colors text-xs sm:text-sm shrink-0">
           <span>←</span>
@@ -358,10 +359,7 @@ export function EditorPage() {
       </div>
 
       {/* ── 编辑区 + 预览 ── */}
-      <div
-        className="editor-layout flex-1 flex overflow-hidden"
-        style={{ height: showConsole ? 'calc(100vh - 110px)' : 'calc(100vh - 56px)' }}
-      >
+      <div className="editor-layout flex-1 flex overflow-hidden">
         {/* 全屏预览 */}
         {fullscreen && (
           <div className="w-full h-full flex flex-col">
@@ -380,11 +378,14 @@ export function EditorPage() {
           </div>
         )}
 
-        {/* 正常编辑模式 */}
+        {/* 正常编辑模式 - 半屏布局（类似 jq22） */}
         {!fullscreen && (
-          <>
-            {/* 代码编辑器 */}
-            <div className={`editor-panel flex-1 flex flex-col border-r border-white/5 ${showPreview ? 'hidden md:flex' : 'flex'}`}>
+          <div className="flex-1 flex overflow-hidden min-h-0">
+            {/* 代码编辑器 - 左半屏（全高度） */}
+            <div
+              className="editor-panel flex flex-col min-h-0"
+              style={{ width: `${100 - splitRatio}%` }}
+            >
               {/* 标签栏 */}
               <div className="flex bg-[#0a0a14]/80 border-b border-white/5 shrink-0">
                 {TABS.map((t) => (
@@ -407,7 +408,7 @@ export function EditorPage() {
                 </span>
               </div>
 
-              {/* 编辑器 */}
+              {/* 编辑器 - 占满剩余高度 */}
               <div className="flex-1 overflow-hidden">
                 <CodeEditor
                   key={`editor-${refreshKey}`}
@@ -418,14 +419,45 @@ export function EditorPage() {
               </div>
             </div>
 
-            {/* 预览面板 */}
-            <div className={`preview-panel flex flex-col ${showPreview ? 'flex' : 'hidden md:flex'} w-full md:w-1/2 lg:w-[45%]`}>
+            {/* 分割线 */}
+            <div className="w-1 bg-white/5 hover:bg-pink-500/30 cursor-col-resize transition-colors" />
+
+            {/* 预览面板 - 右半屏（全高度） */}
+            <div
+              className="preview-panel flex flex-col min-h-0"
+              style={{ width: `${splitRatio}%` }}
+            >
+              {/* 预览标题栏 */}
               <div className="flex items-center justify-between px-3 py-2 bg-[#0a0a14]/80 border-b border-white/5 shrink-0">
                 <span className="text-[10px] sm:text-xs text-white/40 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   实时预览
                 </span>
                 <div className="flex items-center gap-2">
+                  {/* 分栏比例调整 */}
+                  <div className="hidden sm:flex items-center gap-1 mr-2">
+                    <button
+                      onClick={() => setSplitRatio(30)}
+                      className={`w-6 h-6 rounded text-[10px] transition-colors ${splitRatio === 30 ? 'bg-pink-500/30 text-pink-300' : 'bg-white/5 text-white/30 hover:bg-white/10'}`}
+                      title="预览 30%"
+                    >
+                      ◀◀
+                    </button>
+                    <button
+                      onClick={() => setSplitRatio(50)}
+                      className={`w-6 h-6 rounded text-[10px] transition-colors ${splitRatio === 50 ? 'bg-pink-500/30 text-pink-300' : 'bg-white/5 text-white/30 hover:bg-white/10'}`}
+                      title="各半"
+                    >
+                      ▶◀
+                    </button>
+                    <button
+                      onClick={() => setSplitRatio(70)}
+                      className={`w-6 h-6 rounded text-[10px] transition-colors ${splitRatio === 70 ? 'bg-pink-500/30 text-pink-300' : 'bg-white/5 text-white/30 hover:bg-white/10'}`}
+                      title="预览 70%"
+                    >
+                      ▶▶
+                    </button>
+                  </div>
                   <button
                     onClick={() => setRefreshKey((k) => k + 1)}
                     className="text-[10px] sm:text-xs text-white/30 hover:text-pink-400 transition-colors"
@@ -442,7 +474,9 @@ export function EditorPage() {
                   </button>
                 </div>
               </div>
-              <div className="flex-1 bg-white overflow-hidden">
+              
+              {/* 预览区域 - 占满剩余高度（类似 jq22 半屏效果） */}
+              <div className="flex-1 min-h-0 bg-white rounded-br-lg overflow-hidden">
                 <Preview
                   key={previewKey}
                   html={html}
@@ -452,7 +486,7 @@ export function EditorPage() {
                 />
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
 

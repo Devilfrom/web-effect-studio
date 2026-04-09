@@ -66,12 +66,12 @@ function ProjectCard({ project }: { project: Project }) {
       <Link to={`/editor/${project.id}`} className="block relative aspect-[16/10] bg-[#1a1a1a] overflow-hidden">
         {/* 静态图标 */}
         <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${hovering ? 'opacity-0' : 'opacity-100'}`}>
-          <div className="text-5xl opacity-20">⚡</div>
+          <div className="text-3xl sm:text-5xl opacity-20">⚡</div>
         </div>
 
         {/* 悬停遮罩 */}
         <div className={`absolute inset-0 flex items-center justify-center bg-black/50 transition-opacity ${hovering ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#fe2c55] to-[#a855f7] flex items-center justify-center text-lg">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-[#fe2c55] to-[#a855f7] flex items-center justify-center text-base sm:text-lg">
             ✏️
           </div>
         </div>
@@ -90,7 +90,7 @@ function ProjectCard({ project }: { project: Project }) {
         <div className={`absolute top-2 right-2 flex gap-1 transition-opacity ${hovering ? 'opacity-100' : 'opacity-0'}`}>
           <button
             onClick={(e) => { e.preventDefault(); handleShare() }}
-            className="w-7 h-7 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-xs hover:bg-white/20 transition-colors"
+            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-[10px] sm:text-xs hover:bg-white/20 transition-colors"
           >
             {copied ? '✓' : '🔗'}
           </button>
@@ -98,11 +98,11 @@ function ProjectCard({ project }: { project: Project }) {
       </Link>
 
       {/* 信息区 */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-sm truncate">{project.title || '未命名'}</h3>
-            <p className="text-[10px] text-white/40 mt-1">
+            <h3 className="font-bold text-xs sm:text-sm truncate">{project.title || '未命名'}</h3>
+            <p className="text-[9px] sm:text-[10px] text-white/40 mt-0.5 sm:mt-1">
               {project.updatedAt ? `更新于 ${formatDate(project.updatedAt)}` : `创建于 ${formatDate(project.createdAt)}`}
             </p>
           </div>
@@ -111,29 +111,29 @@ function ProjectCard({ project }: { project: Project }) {
           <div className="relative shrink-0">
             <button
               onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu) }}
-              className="w-7 h-7 rounded-full flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-colors"
+              className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-colors"
             >
               ⋯
             </button>
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-36 bg-[#2a2a2a] rounded-xl overflow-hidden border border-white/10 shadow-xl z-20">
+              <div className="absolute right-0 top-full mt-1 w-32 sm:w-36 bg-[#2a2a2a] rounded-lg sm:rounded-xl overflow-hidden border border-white/10 shadow-xl z-20">
                 <Link
                   to={`/editor/${project.id}`}
                   onClick={() => setShowMenu(false)}
-                  className="block px-4 py-2.5 text-xs text-white/70 hover:bg-white/5 transition-colors"
+                  className="block px-3 sm:px-4 py-2 sm:py-2.5 text-[10px] sm:text-xs text-white/70 hover:bg-white/5 transition-colors"
                 >
                   ✏️ 继续编辑
                 </Link>
                 <button
                   onClick={handleShare}
-                  className="w-full text-left px-4 py-2.5 text-xs text-white/70 hover:bg-white/5 transition-colors"
+                  className="w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-[10px] sm:text-xs text-white/70 hover:bg-white/5 transition-colors"
                 >
                   🔗 复制链接
                 </button>
                 <div className="border-t border-white/5" />
                 <button
                   onClick={handleDelete}
-                  className="w-full text-left px-4 py-2.5 text-xs text-[#fe2c55] hover:bg-[#fe2c55]/10 transition-colors"
+                  className="w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-[10px] sm:text-xs text-[#fe2c55] hover:bg-[#fe2c55]/10 transition-colors"
                 >
                   🗑️ 删除
                 </button>
@@ -143,7 +143,7 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
 
         {/* 统计 */}
-        <div className="flex items-center gap-3 mt-3 text-[10px] text-white/30">
+        <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-3 text-[9px] sm:text-[10px] text-white/30">
           <span>📝 {(project.html.length + project.css.length + project.js.length).toLocaleString()} 字符</span>
         </div>
       </div>
@@ -163,21 +163,21 @@ export function MyProjects() {
   )
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white pb-20">
+    <div className="min-h-screen bg-[#121212] text-white pb-16 sm:pb-20">
       {/* 导航栏 */}
       <header className="sticky top-0 z-50 bg-[#121212]/95 backdrop-blur-lg border-b border-white/5">
-        <div className="px-4 py-3 flex items-center gap-3">
-          <Link to="/" className="text-white/50 hover:text-white transition-colors">
+        <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
+          <Link to="/" className="text-white/50 hover:text-white transition-colors text-sm sm:text-base">
             ← 首页
           </Link>
-          <div className="w-px h-4 bg-white/10" />
-          <h1 className="font-bold flex-1">
+          <div className="w-px h-3 sm:h-4 bg-white/10" />
+          <h1 className="font-bold flex-1 text-sm sm:text-base">
             <span className="neon-text">我的作品</span>
-            <span className="text-white/40 text-xs ml-2">{projects.length}</span>
+            <span className="text-white/40 text-[10px] sm:text-xs ml-1.5 sm:ml-2">{projects.length}</span>
           </h1>
           <Link
             to="/editor/new"
-            className="px-4 py-2 rounded-full bg-gradient-to-r from-[#fe2c55] to-[#a855f7] text-xs font-bold"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-[#fe2c55] to-[#a855f7] text-[10px] sm:text-xs font-bold"
           >
             + 新建
           </Link>
@@ -185,21 +185,21 @@ export function MyProjects() {
       </header>
 
       {/* 主内容 */}
-      <main className="px-4 py-4">
+      <main className="px-3 sm:px-4 py-3 sm:py-4">
         {sorted.length === 0 ? (
-          <div className="text-center py-24">
-            <div className="text-7xl mb-4">🎨</div>
-            <h2 className="text-lg font-bold text-white/60 mb-2">还没有作品</h2>
-            <p className="text-sm text-white/30 mb-6">去首页找个喜欢的特效开始吧~</p>
+          <div className="text-center py-16 sm:py-24">
+            <div className="text-5xl sm:text-7xl mb-3 sm:mb-4">🎨</div>
+            <h2 className="text-base sm:text-lg font-bold text-white/60 mb-1.5 sm:mb-2">还没有作品</h2>
+            <p className="text-xs sm:text-sm text-white/30 mb-4 sm:mb-6">去首页找个喜欢的特效开始吧~</p>
             <Link
               to="/"
-              className="inline-block px-6 py-3 rounded-full bg-white/5 border border-white/10 text-sm hover:bg-white/10 transition-colors"
+              className="inline-block px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white/5 border border-white/10 text-xs sm:text-sm hover:bg-white/10 transition-colors"
             >
               🔍 浏览特效库 →
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {sorted.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
@@ -211,17 +211,17 @@ export function MyProjects() {
       <nav className="bottom-nav">
         <div className="max-w-lg mx-auto flex items-center justify-around py-2">
           <Link to="/" className="bottom-nav-item">
-            <span className="text-xl">🏠</span>
-            <span className="text-[10px]">首页</span>
+            <span className="text-lg sm:text-xl">🏠</span>
+            <span className="text-[9px] sm:text-[10px]">首页</span>
           </Link>
-          <Link to="/editor/new" className="relative -mt-6">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#25f4ee] via-[#fe2c55] to-[#a855f7] flex items-center justify-center text-2xl shadow-lg pulse-glow">
+          <Link to="/editor/new" className="relative -mt-5 sm:-mt-6">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-[#25f4ee] via-[#fe2c55] to-[#a855f7] flex items-center justify-center text-xl sm:text-2xl shadow-lg pulse-glow">
               +
             </div>
           </Link>
           <Link to="/my" className="bottom-nav-item active">
-            <span className="text-xl">📁</span>
-            <span className="text-[10px]">作品</span>
+            <span className="text-lg sm:text-xl">📁</span>
+            <span className="text-[9px] sm:text-[10px]">作品</span>
           </Link>
         </div>
       </nav>

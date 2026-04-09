@@ -262,6 +262,14 @@ body::before {
     inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
+/* 卡片预览区 iframe 优化 */
+.effect-card iframe {
+  transition: opacity 0.3s ease-in-out;
+}
+.effect-card:hover iframe {
+  opacity: 1;
+}
+
 /* ── 导航栏 ── */
 .topbar {
   position: sticky;
@@ -321,10 +329,8 @@ body::before {
 
 /* ── 看板娘 ── */
 .mascot-widget {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
   z-index: 999;
+  /* 不设置 bottom/right，让组件通过 left/top 控制位置 */
 }
 
 /* ── 滚动条 ── */
@@ -371,4 +377,38 @@ body::before {
   .effect-card:hover { transform: none; }
   .glass-card:hover { transform: none; }
   .sidebar { display: none; }
+  
+  /* 移动端顶部栏优化 */
+  .topbar .search-wrap { 
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: 160px;
+  }
+  .topbar .search-input {
+    padding: 9px 16px 9px 36px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* 小屏幕顶部栏 */
+  .topbar .search-wrap { 
+    display: none;
+  }
+  
+  /* 小屏幕卡片网格 */
+  .effect-card {
+    border-radius: 16px;
+  }
+  .effect-card .h-40 {
+    height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* 超小屏幕 */
+  .cat-tab {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
 }

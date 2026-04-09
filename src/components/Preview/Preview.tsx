@@ -88,18 +88,18 @@ export const Preview = forwardRef<PreviewHandle, PreviewProps>(
       return () => window.removeEventListener('message', handler)
     }, [onConsoleLog])
 
+    // 直接返回 iframe，不再包裹 div（由父组件控制样式）
     return (
-      <div className="flex-1 bg-white">
-        <iframe
-          ref={iframeRef}
-          id="preview-frame"
-          title="预览"
-          className="w-full h-full border-none"
-          // allow-scripts: 运行用户 JS
-          // allow-modals: 允许 alert/confirm
-          sandbox="allow-scripts allow-modals"
-        />
-      </div>
+      <iframe
+        ref={iframeRef}
+        id="preview-frame"
+        title="预览"
+        className="w-full h-full border-none bg-white"
+        // allow-scripts: 运行用户 JS
+        // allow-same-origin: 允许 Blob URL 加载
+        // allow-modals: 允许 alert/confirm
+        sandbox="allow-scripts allow-same-origin allow-modals"
+      />
     )
   }
 )
