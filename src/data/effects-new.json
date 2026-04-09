@@ -1,0 +1,342 @@
+﻿[
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "electric-border",
+        "tags":  [
+                     "特效",
+                     "边框",
+                     "动画"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "CSS动画电流边框，鼠标悬停时电流效果",
+        "html":  "\u003cdiv class=\"card-container\"\u003e\u003cdiv class=\"inner-container\"\u003e\u003cdiv class=\"border-outer\"\u003e\u003cdiv class=\"main-card\"\u003e\u003c/div\u003e\u003c/div\u003e\u003cdiv class=\"glow-layer-1\"\u003e\u003c/div\u003e\u003cdiv class=\"glow-layer-2\"\u003e\u003c/div\u003e\u003c/div\u003e\u003cdiv class=\"overlay-1\"\u003e\u003c/div\u003e\u003cdiv class=\"overlay-2\"\u003e\u003c/div\u003e\u003cdiv class=\"background-glow\"\u003e\u003c/div\u003e\u003cdiv class=\"content-container\"\u003e\u003cdiv class=\"content-top\"\u003e\u003cdiv class=\"scrollbar-glass\"\u003eDramatic\u003c/div\u003e\u003cp class=\"title\"\u003eElectric Border\u003c/p\u003e\u003c/div\u003e\u003chr class=\"divider\" /\u003e\u003cdiv class=\"content-bottom\"\u003e\u003cp class=\"description\"\u003eIn case you would like to emphasize something very dramatically.\u003c/p\u003e\u003c/div\u003e\u003c/div\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;background-color:#0a0a0a;color:#fff;height:100vh;display:flex;align-items:center;justify-content:center}.card-container{padding:2px;border-radius:24px;position:relative;background:linear-gradient(-30deg,#ff6b6b,transparent,#4ecdc4,#45b7d1,#ff6b6b),linear-gradient(30deg,#45b7d1,#96e6a1,#d4fc79,#ff6b6b);background-size:300% 300%;animation:gradient 4s ease infinite}.inner-container{padding:2px;border-radius:22px;overflow:hidden}.border-outer{padding:48px;background:#0a0a0a;border-radius:20px;position:relative}.glow-layer-1,.glow-layer-2{position:absolute;inset:0;border-radius:20px;filter:blur(40px);opacity:0.6}.glow-layer-1{background:linear-gradient(45deg,#ff6b6b,#feca57)}.glow-layer-2{background:linear-gradient(-45deg,#45b7d1,#96e6a1)}.content-container{position:absolute;inset:0;display:flex;flex-direction:column;padding:48px}.scrollbar-glass{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:8px 16px;border-radius:14px;font-weight:bold;text-transform:uppercase;font-size:14px;width:fit-content}.title{font-size:2rem;font-weight:bold;margin-top:16px}.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);margin:16px 0}.description{color:rgba(255,255,255,0.7);line-height:1.6}@keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}",
+        "title":  "电流边框特效"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "ripple-button",
+        "tags":  [
+                     "按钮",
+                     "波纹",
+                     "特效"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "CSS波纹效果按钮，点击时水波扩散",
+        "html":  "\u003cmain\u003e\u003cbutton style=\"--ripples:3\"\u003eTouch of wave\u003c/button\u003e\u003cbutton style=\"--ripples:6\"\u003eLet\u0027s get wavy\u003c/button\u003e\u003cbutton style=\"--ripples:12\"\u003eSo many ripples\u003c/button\u003e\u003c/main\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "*{box-sizing:border-box}html,body{height:100%}body{display:grid;place-items:center;color:#fff;background:#02040c;font-family:system-ui,-apple-system,sans-serif}main{display:grid;gap:2rem;padding:1rem}button{--button-bg:#6366f1;position:relative;overflow:hidden;cursor:pointer;padding:1.5rem 2rem;font-family:inherit;font-size:1.5rem;line-height:1;border:1px solid transparent;border-radius:0.5rem;background:var(--button-bg);color:inherit}@property --gradient-angle{syntax:\"\u003cangle\u003e\";initial-value:0deg;inherits:false}button{--_percentage:calc(100% / var(--ripples,1));--ripple-speed:2s;background:linear-gradient(var(--button-bg),var(--button-bg)) padding-box,repeating-conic-gradient(from var(--gradient-angle),transparent,var(--button-bg) calc(var(--_percentage) * 0.5),transparent var(--_percentage)) border-box;animation:var(--ripple-speed) ripple linear infinite}button::before{content:\"\";position:absolute;inset-inline-start:50%;inset-block-start:50%;translate:-50% -50%;width:150%;aspect-ratio:1;background:linear-gradient(transparent,hsla(0 0% 100% / 0.1),transparent);animation:calc((var(--ripple-speed) * 3) / var(--ripples)) shimmer linear infinite;pointer-events:none}@keyframes ripple{to{--gradient-angle:360deg}}@keyframes shimmer{to{rotate:360deg}}",
+        "title":  "波纹按钮"
+    },
+    {
+        "js":  "const c=document.getElementById(\"c\"),x=c.getContext(\"2d\");let w,h,particles=[],mouse={x:null,y:null,r:100};const txt=\"WEB EFFECT\";function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;init()};function init(){particles=[];x.font=\"bold 80px sans-serif\";x.textAlign=\"center\";x.textBaseline=\"middle\";const metrics=x.measureText(txt),fw=metrics.width,fh=80;x.fillStyle=\"#fff\";x.fillText(txt,w/2,h/2);const idata=x.getImageData(0,0,w,h),buffer32=new Uint32Array(idata.data.buffer);for(let y=0;y\u003ch;y+=4){for(let x=0;x\u003cw;x+=4){if(buffer32[y*w+x]){const angle=Math.random()*Math.PI*2,speed=Math.random()*2+0.5;particles.push({ox:x,oy:y,x:x,y:y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,friction:0.95,alpha:1})}}}x.clearRect(0,0,w,h)}function tick(){x.fillStyle=\"rgba(10,10,10,0.1)\";x.fillRect(0,0,w,h);particles.forEach(p=\u003e{if(mouse.x!==null){const dx=mouse.x-p.x,dy=mouse.y-p.y,d=Math.sqrt(dx*dx+dy*dy);if(d\u003cmouse.r){const force=(mouse.r-d)/mouse.r,fx=dx/d*force*0.5,fy=dy/d*force*0.5;p.vx+=fx;p.vy+=fy}}p.vx*=p.friction;p.vy*=p.friction;p.x+=p.vx;p.y+=p.vy;p.alpha=Math.min(p.alpha+0.02,1);x.fillStyle=\rgba(100,200,255,);x.fillRect(p.x,p.y,2,2)});requestAnimationFrame(tick)};window.addEventListener(\"resize\",resize);window.addEventListener(\"mousemove\",e=\u003e{mouse.x=e.clientX;mouse.y=e.clientY});window.addEventListener(\"mouseout\",()=\u003e{mouse.x=mouse.y=null});resize();tick()",
+        "viewCount":  0,
+        "id":  "particle-text",
+        "tags":  [
+                     "粒子",
+                     "文字",
+                     "Canvas"
+                 ],
+        "likeCount":  0,
+        "category":  "animation",
+        "description":  "Canvas 粒子化文字效果，鼠标悬停粒子重组",
+        "html":  "\u003ccanvas id=\"c\"\u003e\u003c/canvas\u003e\u003cdiv class=\"hint\"\u003e将鼠标悬停在文字上\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;overflow:hidden;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:sans-serif}.hint{position:fixed;bottom:30px;color:rgba(255,255,255,0.4);font-size:14px}canvas{position:absolute}",
+        "title":  "粒子文字"
+    },
+    {
+        "js":  "const c=document.getElementById(\"c\"),x=c.getContext(\"2d\");let w,h,snow=[];function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight};function createSnow(){return{x:Math.random()*w,y:Math.random()*h-h,r:Math.random()*3+1,d:Math.random()*3+1}};for(let i=0;i\u003c200;i++)snow.push(createSnow());function draw(){x.clearRect(0,0,w,h);x.fillStyle=\"rgba(255,255,255,0.8)\";x.beginPath();snow.forEach(s=\u003e{x.moveTo(s.x,s.y);x.arc(s.x,s.y,s.r,0,Math.PI*2)});x.fill();snow.forEach(s=\u003e{s.y+=s.d;s.x+=Math.sin(s.y*0.01)*0.5;if(s.y\u003eh){s.y=-10;s.x=Math.random()*w}s.d=Math.random()*3+1});requestAnimationFrame(draw)};resize();draw();window.addEventListener(\"resize\",resize)",
+        "viewCount":  0,
+        "id":  "snowflakes",
+        "tags":  [
+                     "雪花",
+                     "动画",
+                     "冬季"
+                 ],
+        "likeCount":  0,
+        "category":  "animation",
+        "description":  "Canvas 雪花飘落动画，营造冬日氛围",
+        "html":  "\u003ccanvas id=\"c\"\u003e\u003c/canvas\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;overflow:hidden;background:linear-gradient(to bottom,#1a1a2e,#16213e)}canvas{position:fixed;top:0;left:0}",
+        "title":  "雪花飘落"
+    },
+    {
+        "js":  "const txt=\"Hello World! Welcome to Web Effect Studio.\";let i=0;function type(){if(i\u003ctxt.length){document.getElementById(\"type\").textContent+=txt[i];i++;setTimeout(type,100)}}type()",
+        "viewCount":  0,
+        "id":  "typewriter",
+        "tags":  [
+                     "打字机",
+                     "文字",
+                     "动画"
+                 ],
+        "likeCount":  0,
+        "category":  "text",
+        "description":  "文字逐字打出效果，支持光标闪烁",
+        "html":  "\u003cdiv class=\"wrap\"\u003e\u003ch1 id=\"type\"\u003e\u003c/h1\u003e\u003cp class=\"cursor\"\u003e|\u003c/p\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:monospace}.wrap{display:flex;align-items:center}h1{color:#0f0;font-size:2.5rem;margin:0}.cursor{color:#0f0;font-size:2.5rem;margin:0;animation:blink 0.7s infinite}@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}",
+        "title":  "打字机效果"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "3d-flip-card",
+        "tags":  [
+                     "3D",
+                     "翻转",
+                     "卡片"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "CSS 3D 翻转卡片，鼠标悬停展示背面",
+        "html":  "\u003cdiv class=\"card\"\u003e\u003cdiv class=\"front\"\u003e\u003ch2\u003e正面\u003c/h2\u003e\u003cp\u003e鼠标悬停查看背面\u003c/p\u003e\u003c/div\u003e\u003cdiv class=\"back\"\u003e\u003ch2\u003e背面\u003c/h2\u003e\u003cp\u003e这是一张翻转卡片\u003c/p\u003e\u003c/div\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#1a1a2e;display:flex;align-items:center;justify-content:center;perspective:1000px;font-family:sans-serif}.card{width:300px;height:200px;position:relative;transform-style:preserve-3d;transition:transform 0.6s;cursor:pointer}.card:hover{transform:rotateY(180deg)}.front,.back{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.3)}.front{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}.back{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;transform:rotateY(180deg)}h2{margin:0 0 12px}p{color:rgba(255,255,255,0.8);margin:0}",
+        "title":  "3D卡片翻转"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "loading-dots",
+        "tags":  [
+                     "Loading",
+                     "加载",
+                     "动画"
+                 ],
+        "likeCount":  0,
+        "category":  "animation",
+        "description":  "多种创意 Loading 加载动画",
+        "html":  "\u003cdiv class=\"loaders\"\u003e\u003cdiv class=\"l1\"\u003e\u003c/div\u003e\u003cdiv class=\"l2\"\u003e\u003c/div\u003e\u003cdiv class=\"l3\"\u003e\u003c/div\u003e\u003cdiv class=\"l4\"\u003e\u003c/div\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.loaders{display:flex;gap:40px;flex-wrap:wrap;justify-content:center}.l1,.l2,.l3,.l4{width:40px;height:40px;border-radius:50%;position:relative}.l1{background:conic-gradient(#f09,#0ff,#f09);animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.l2{display:flex;gap:6px}.l2::before,.l2::after{content:\"\";flex:1;border-radius:50%;background:#4CAF50;animation:bounce 0.5s alternate infinite}@keyframes bounce{to{transform:scale(1.5)}}.l3{background:#fff;animation:pulse 1s ease-in-out infinite}@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(0.5);opacity:0.5}}.l4{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}.l4::before,.l4::after{content:\"\";background:#f5576c;border-radius:4px;animation:wave 0.5s ease-in-out infinite alternate}@keyframes wave{to{transform:scale(0.8)}}",
+        "title":  "Loading 动画"
+    },
+    {
+        "js":  "const nav=document.querySelector(\"nav\"),links=nav.querySelectorAll(\"a\"),slide=nav.querySelector(\".slide\");function move(e){slide.style.left=e.offsetLeft+\"px\";slide.style.width=e.offsetWidth+\"px\"}links.forEach(a=\u003ea.addEventListener(\"mouseenter\",()=\u003emove(a)));move(links[0]);links[0].classList.add(\"active\")",
+        "viewCount":  0,
+        "id":  "nav-hover",
+        "tags":  [
+                     "导航",
+                     "菜单",
+                     "动画"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "导航菜单项 hover 动画效果",
+        "html":  "\u003cnav\u003e\u003ca href=\"#\"\u003e首页\u003c/a\u003e\u003ca href=\"#\"\u003e产品\u003c/a\u003e\u003ca href=\"#\"\u003e关于\u003c/a\u003e\u003ca href=\"#\"\u003e联系\u003c/a\u003e\u003cdiv class=\"slide\"\u003e\u003c/div\u003e\u003c/nav\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}nav{position:relative;display:flex;gap:8px;padding:8px;background:#1a1a2e;border-radius:12px}.nav a{position:relative;z-index:1;padding:12px 24px;color:#aaa;text-decoration:none;font-size:1rem;transition:color 0.3s}.nav a:hover,.nav a.active{color:#fff}.slide{position:absolute;top:8px;left:8px;height:calc(100% - 16px);background:#667eea;border-radius:8px;transition:left 0.3s,width 0.3s;z-index:0}",
+        "title":  "导航菜单动画"
+    },
+    {
+        "js":  "const slides=document.querySelector(\".slides\"),dots=document.querySelectorAll(\".dot\");let i=0;function go(){i=(i+1)%3;slides.style.transform=\translateX(px);dots.forEach((d,idx)=\u003ed.classList.toggle(\"active\",idx===i))}setInterval(go,3000);dots.forEach((d,idx)=\u003ed.onclick=()=\u003e{i=idx;slides.style.transform=\translateX(px);dots.forEach((d2,i2)=\u003ed2.classList.toggle(\"active\",i2===idx))})",
+        "viewCount":  0,
+        "id":  "carousel",
+        "tags":  [
+                     "轮播",
+                     "图片",
+                     "幻灯片"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "自动轮播图片，底部带指示器",
+        "html":  "\u003cdiv class=\"slider\"\u003e\u003cdiv class=\"slides\"\u003e\u003cdiv class=\"slide s1\"\u003e1\u003c/div\u003e\u003cdiv class=\"slide s2\"\u003e2\u003c/div\u003e\u003cdiv class=\"slide s3\"\u003e3\u003c/div\u003e\u003c/div\u003e\u003cdiv class=\"dots\"\u003e\u003cspan class=\"dot\"\u003e\u003c/span\u003e\u003cspan class=\"dot\"\u003e\u003c/span\u003e\u003cspan class=\"dot\"\u003e\u003c/span\u003e\u003c/div\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.slider{width:600px;height:350px;overflow:hidden;border-radius:16px;position:relative}.slides{display:flex;transition:transform 0.5s}.slide{width:600px;height:350px;display:flex;align-items:center;justify-content:center;font-size:5rem;font-weight:bold;color:#fff;flex-shrink:0}.s1{background:linear-gradient(135deg,#667eea,#764ba2)}.s2{background:linear-gradient(135deg,#f093fb,#f5576c)}.s3{background:linear-gradient(135deg,#4facfe,#00f2fe)}.dots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px}.dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:background 0.3s}.dot.active,.dot:hover{background:#fff}",
+        "title":  "图片轮播"
+    },
+    {
+        "js":  "document.querySelectorAll(\".tab-head button\").forEach(b=\u003e{b.onclick=()=\u003e{document.querySelectorAll(\".tab-head button\").forEach(b2=\u003eb2.classList.remove(\"active\"));document.querySelectorAll(\".tab-content\").forEach(c=\u003ec.classList.remove(\"show\"));b.classList.add(\"active\");document.querySelector([data-content=\"\"]).classList.add(\"show\")}})",
+        "viewCount":  0,
+        "id":  "tabs",
+        "tags":  [
+                     "标签",
+                     "Tabs",
+                     "切换"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "点击切换标签内容，带动画效果",
+        "html":  "\u003cdiv class=\"tabs\"\u003e\u003cdiv class=\"tab-head\"\u003e\u003cbutton class=\"active\" data-tab=\"1\"\u003e标签一\u003c/button\u003e\u003cbutton data-tab=\"2\"\u003e标签二\u003c/button\u003e\u003cbutton data-tab=\"3\"\u003e标签三\u003c/button\u003e\u003c/div\u003e\u003cdiv class=\"tab-body\"\u003e\u003cdiv class=\"tab-content show\" data-content=\"1\"\u003e\u003ch3\u003e标题一\u003c/h3\u003e\u003cp\u003e这是第一个标签的内容，包含一些示例文本。\u003c/p\u003e\u003c/div\u003e\u003cdiv class=\"tab-content\" data-content=\"2\"\u003e\u003ch3\u003e标题二\u003c/h3\u003e\u003cp\u003e这是第二个标签的内容，显示不同的信息。\u003c/p\u003e\u003c/div\u003e\u003cdiv class=\"tab-content\" data-content=\"3\"\u003e\u003ch3\u003e标题三\u003c/h3\u003e\u003cp\u003e这是第三个标签的内容，展示了更多信息。\u003c/p\u003e\u003c/div\u003e\u003c/div\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.tabs{width:400px}.tab-head{display:flex;gap:4px;padding:4px;background:#1a1a2e;border-radius:12px}.tab-head button{flex:1;padding:12px;border:none;background:transparent;color:#aaa;font-size:1rem;cursor:pointer;border-radius:8px;transition:all 0.3s}.tab-head button.active{background:#667eea;color:#fff}.tab-body{margin-top:20px}.tab-content{display:none;padding:20px;background:#1a1a2e;border-radius:12px;animation:fadeIn 0.3s}.tab-content.show{display:block}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}h3{color:#fff;margin:0 0 12px}p{color:#aaa;margin:0;line-height:1.6}",
+        "title":  "标签页切换"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "search-box",
+        "tags":  [
+                     "搜索框",
+                     "动画",
+                     "输入"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "点击展开搜索框，带过渡动画",
+        "html":  "\u003cdiv class=\"search\"\u003e\u003cinput type=\"text\" placeholder=\"搜索...\"\u003e\u003cbutton\u003e🔍\u003c/button\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.search{position:relative;display:flex;align-items:center;background:#1a1a2e;border-radius:50px;padding:8px;transition:width 0.4s ease;width:60px;overflow:hidden}.search:focus-within{width:300px}.search input{border:none;background:transparent;padding:12px 20px;font-size:1rem;color:#fff;width:100%;outline:none}.search input::placeholder{color:#666}.search button{border:none;background:#667eea;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.2rem;transition:transform 0.3s}.search button:hover{transform:scale(1.1)}",
+        "title":  "搜索框动画"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "card-hover",
+        "tags":  [
+                     "卡片",
+                     "悬停",
+                     "特效"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "鼠标悬停卡片放大并显示阴影",
+        "html":  "\u003cdiv class=\"cards\"\u003e\u003cdiv class=\"card\"\u003e\u003ch3\u003e卡片一\u003c/h3\u003e\u003cp\u003e悬停查看效果\u003c/p\u003e\u003c/div\u003e\u003cdiv class=\"card\"\u003e\u003ch3\u003e卡片二\u003c/h3\u003e\u003cp\u003e悬停查看效果\u003c/p\u003e\u003c/div\u003e\u003cdiv class=\"card\"\u003e\u003ch3\u003e卡片三\u003c/h3\u003e\u003cp\u003e悬停查看效果\u003c/p\u003e\u003c/div\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.cards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}.card{width:200px;padding:30px;background:#1a1a2e;border-radius:16px;text-align:center;cursor:pointer;transition:all 0.4s ease}.card:hover{transform:translateY(-10px) scale(1.02);box-shadow:0 20px 60px rgba(102,126,234,0.4)}.card h3{color:#fff;margin:0 0 12px}.card p{color:#aaa;margin:0}",
+        "title":  "卡片悬停效果"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "gradient-text",
+        "tags":  [
+                     "渐变",
+                     "文字",
+                     "CSS"
+                 ],
+        "likeCount":  0,
+        "category":  "text",
+        "description":  "CSS 渐变文字效果",
+        "html":  "\u003ch1\u003eWeb Effect Studio\u003c/h1\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,sans-serif}h1{font-size:5rem;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb,#f5576c);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradient 3s ease infinite}@keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}",
+        "title":  "渐变文字"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "glassmorphism",
+        "tags":  [
+                     "玻璃态",
+                     "毛玻璃",
+                     "现代"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "毛玻璃效果卡片，现代 UI 设计风格",
+        "html":  "\u003cdiv class=\"bg\"\u003e\u003c/div\u003e\u003cdiv class=\"card\"\u003e\u003ch2\u003eGlassmorphism\u003c/h2\u003e\u003cp\u003e这是一个玻璃态效果示例。背景模糊，半透明效果，现代 UI 设计中常见的风格。\u003c/p\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}.bg{position:absolute;inset:0;background:linear-gradient(45deg,#667eea,#764ba2,#f093fb,#f5576c);background-size:400% 400%;animation:gradient 10s ease infinite}.card{position:relative;width:400px;padding:40px;background:rgba(255,255,255,0.1);border-radius:20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.1)}.card h2{color:#fff;margin:0 0 16px;font-size:2rem}.card p{color:rgba(255,255,255,0.8);margin:0;line-height:1.6}@keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}",
+        "title":  "玻璃态效果"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "rainbow-border",
+        "tags":  [
+                     "彩虹",
+                     "边框",
+                     "动画"
+                 ],
+        "likeCount":  0,
+        "category":  "animation",
+        "description":  "流动的彩虹边框动画效果",
+        "html":  "\u003cdiv class=\"box\"\u003e\u003ch2\u003e彩虹边框\u003c/h2\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.box{position:relative;padding:60px 80px;background:#1a1a2e;border-radius:16px}.box::before{content:\"\";position:absolute;inset:-3px;border-radius:20px;background:linear-gradient(45deg,#ff0000,#ff7700,#ffff00,#00ff00,#0000ff,#4b0082,#8f00ff,#ff0000);background-size:400% 400%;animation:rainbow 3s linear infinite;z-index:-1}@keyframes rainbow{0%{background-position:0% 50%}100%{background-position:400% 50%}}.box h2{color:#fff;margin:0;font-size:2rem}",
+        "title":  "彩虹边框"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "pulse-button",
+        "tags":  [
+                     "按钮",
+                     "脉冲",
+                     "特效"
+                 ],
+        "likeCount":  0,
+        "category":  "ui",
+        "description":  "带脉冲效果的按钮动画",
+        "html":  "\u003cbutton class=\"pulse\"\u003e点击我\u003c/button\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.pulse{position:relative;padding:20px 48px;font-size:1.2rem;font-weight:bold;color:#fff;background:#667eea;border:none;border-radius:50px;cursor:pointer;overflow:visible}.pulse::before,.pulse::after{content:\"\";position:absolute;inset:-10px;border-radius:60px;background:inherit;opacity:0.6;z-index:-1;animation:pulse 2s ease-out infinite}.pulse::after{animation-delay:0.5s}@keyframes pulse{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.4);opacity:0}}",
+        "title":  "脉冲按钮"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "floating-shapes",
+        "tags":  [
+                     "浮动",
+                     "背景",
+                     "几何"
+                 ],
+        "likeCount":  0,
+        "category":  "animation",
+        "description":  "背景浮动几何形状动画",
+        "html":  "\u003cdiv class=\"shapes\"\u003e\u003cdiv class=\"shape s1\"\u003e\u003c/div\u003e\u003cdiv class=\"shape s2\"\u003e\u003c/div\u003e\u003cdiv class=\"shape s3\"\u003e\u003c/div\u003e\u003cdiv class=\"shape s4\"\u003e\u003c/div\u003e\u003ch1\u003e浮动效果\u003c/h1\u003e\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0d0d0d;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:sans-serif}.shapes{position:relative;width:100%;height:100vh}.shape{position:absolute;opacity:0.3;animation:float 10s ease-in-out infinite}.s1{width:150px;height:150px;background:#667eea;border-radius:30% 70% 70% 30% / 30% 30% 70% 70%;top:10%;left:10%;animation-delay:0s}.s2{width:100px;height:100px;background:#f5576c;border-radius:50%;top:60%;right:15%;animation-delay:-2s}.s3{width:80px;height:80px;background:#4CAF50;transform:rotate(45deg);bottom:20%;left:20%;animation-delay:-4s}.s4{width:120px;height:120px;background:#ff9f43;border-radius:60% 40% 30% 70% / 60% 30% 70% 40%;top:30%;right:25%;animation-delay:-6s}.shapes h1{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:3rem;z-index:10}@keyframes float{0%,100%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(20px,-20px) rotate(5deg)}50%{transform:translate(-10px,15px) rotate(-3deg)}75%{transform:translate(15px,10px) rotate(2deg)}}",
+        "title":  "浮动形状"
+    },
+    {
+        "js":  "const c=document.getElementById(\"c\"),x=c.getContext(\"2d\");let w,h,trail=[];function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight};function addTrail(e){trail.push({x:e.clientX,y:e.clientY,size:20,alpha:1});if(trail.length\u003e50)trail.shift()}function draw(){x.fillStyle=\"rgba(10,10,10,0.2)\";x.fillRect(0,0,w,h);trail.forEach((t,i)=\u003e{t.size*=0.95;t.alpha*=0.95;if(t.alpha\u003c0.01)trail.splice(i,1);x.beginPath();x.arc(t.x,t.y,t.size,0,Math.PI*2);x.fillStyle=\rgba(102,126,234,);x.fill()});requestAnimationFrame(draw)};window.addEventListener(\"resize\",resize);window.addEventListener(\"mousemove\",addTrail);resize();draw()",
+        "viewCount":  0,
+        "id":  "mouse-trailer",
+        "tags":  [
+                     "鼠标",
+                     "拖尾",
+                     "特效"
+                 ],
+        "likeCount":  0,
+        "category":  "animation",
+        "description":  "鼠标移动时带拖尾效果",
+        "html":  "\u003ccanvas id=\"c\"\u003e\u003c/canvas\u003e\u003cdiv class=\"hint\"\u003e移动鼠标查看效果\u003c/div\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;overflow:hidden;background:#0d0d0d}canvas{position:fixed;top:0;left:0}.hint{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.4);font-family:sans-serif;font-size:14px}",
+        "title":  "鼠标跟随"
+    },
+    {
+        "js":  "const c=document.getElementById(\"c\"),x=c.getContext(\"2d\");let w,h,stars=[];function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight};function createStar(){return{x:Math.random()*w,y:Math.random()*h,z:Math.random()*2+0.5}};for(let i=0;i\u003c500;i++)stars.push(createStar());function draw(){x.fillStyle=\"#000\";x.fillRect(0,0,w,h);stars.forEach(s=\u003e{s.z-=0.01;if(s.z\u003c=0){s.z=2;s.x=Math.random()*w;s.y=Math.random()*h}const sx=s.x/s.z*100+w/2,sy=s.y/s.z*100+h/2,size=Math.max(0.1,3/s.z);x.fillStyle=\rgba(255,255,255,);x.beginPath();x.arc(sx,sy,size,0,Math.PI*2);x.fill()});requestAnimationFrame(draw)};resize();draw();window.addEventListener(\"resize\",resize)",
+        "viewCount":  0,
+        "id":  "star-field",
+        "tags":  [
+                     "星空",
+                     "背景",
+                     "粒子"
+                 ],
+        "likeCount":  0,
+        "category":  "animation",
+        "description":  "Canvas 星空背景动画",
+        "html":  "\u003ccanvas id=\"c\"\u003e\u003c/canvas\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;overflow:hidden;background:#000}canvas{position:fixed;top:0;left:0}",
+        "title":  "星空背景"
+    },
+    {
+        "js":  "",
+        "viewCount":  0,
+        "id":  "neon-text",
+        "tags":  [
+                     "霓虹",
+                     "发光",
+                     "文字"
+                 ],
+        "likeCount":  0,
+        "category":  "text",
+        "description":  "发光霓虹文字效果",
+        "html":  "\u003ch1 class=\"neon\"\u003eNEON\u003c/h1\u003e",
+        "authorName":  "Web Effect Studio",
+        "css":  "body{margin:0;min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,sans-serif}.neon{font-size:8rem;font-weight:bold;color:#fff;text-shadow:0 0 10px #fff,0 0 20px #fff,0 0 40px #f0f,0 0 80px #f0f,0 0 90px #f0f,0 0 100px #f0f,0 0 150px #f0f;animation:pulse 2s ease-in-out infinite alternate}@keyframes pulse{from{text-shadow:0 0 10px #fff,0 0 20px #fff,0 0 40px #f0f,0 0 80px #f0f,0 0 90px #f0f,0 0 100px #f0f,0 0 150px #f0f}to{text-shadow:0 0 20px #fff,0 0 40px #ff0,0 0 80px #ff0,0 0 100px #ff0,0 0 120px #ff0,0 0 150px #ff0,0 0 200px #ff0}}",
+        "title":  "霓虹文字"
+    }
+]
