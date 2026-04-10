@@ -1,0 +1,67 @@
+[
+  {
+    "id": "snake-game",
+    "title": "贪吃蛇",
+    "description": "经典贪吃蛇，方向键/WASD控制，撞墙=结束",
+    "category": "game",
+    "tags": ["游戏", "贪吃蛇", "经典"],
+    "html": "<div id=\"wrap\"><div id=\"score\">得分: 0</div><canvas id=\"c\"></canvas><div id=\"over\" class=\"hidden\"><p>GAME OVER</p><button id=\"restart\">重新开始</button></div><div id=\"hint\">方向键/WASD</div></div>",
+    "css": "body{margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}#wrap{position:relative}canvas{background:#0a1a0a;border:2px solid #0f0;border-radius:4px;display:block}#score{color:#0f0;font-size:1.2rem;margin-bottom:8px;font-weight:bold}#hint{color:#555;font-size:0.8rem;text-align:center;margin-top:8px}#over{position:absolute;inset:0;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px}#over.hidden{display:none}#over p{color:#f44;font-size:2rem;margin:0 0 16px}#restart{padding:8px 24px;background:#0f0;color:#000;border:none;border-radius:6px;cursor:pointer;font-size:1rem}",
+    "js": "const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');const G=20,W=20,H=15;canvas.width=W*G;canvas.height=H*G;let snake,dir,food,score,alive;function init(){snake=[{x:10,y:7},{x:9,y:7},{x:8,y:7}];dir={x:1,y:0};score=0;alive=true;placeFood();render();document.getElementById('score').textContent='得分: '+score;document.getElementById('over').classList.add('hidden');tick()};function placeFood(){do{food={x:Math.floor(Math.random()*W),y:Math.floor(Math.random()*H)}}while(snake.some(s=>s.x===food.x&&s.y===food.y))};function tick(){if(!alive)return;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(head.x<0||head.x>=W||head.y<0||head.y>=H||snake.some(s=>s.x===head.x&&s.y===head.y)){alive=false;document.getElementById('over').classList.remove('hidden');return}snake.unshift(head);if(head.x===food.x&&head.y===food.y){score++;document.getElementById('score').textContent='得分: '+score;placeFood()}else{snake.pop()}render();setTimeout(tick,120)};function render(){ctx.fillStyle='#0a1a0a';ctx.fillRect(0,0,W*G,H*G);snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#0f8':'#0f0';ctx.fillRect(s.x*G+1,s.y*G+1,G-2,G-2)});ctx.fillStyle='#f44';ctx.fillRect(food.x*G+2,food.y*G+2,G-4,G-4)};document.addEventListener('keydown',e=>{const k={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0},w:{x:0,y:-1},s:{x:0,y:1},a:{x:-1,y:0},d:{x:1,y:0}};if(k[e.key]&&!(k[e.key].x+dir.x===0&&k[e.key].y+dir.y===0))dir=k[e.key]});document.getElementById('restart').addEventListener('click',init);init();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 3200,
+    "likeCount": 278
+  },
+  {
+    "id": "pong-game",
+    "title": "乒乓球对战",
+    "description": "经典 Pong 游戏，左右球拍，双人对战",
+    "category": "game",
+    "tags": ["游戏", "乒乓球", "对战"],
+    "html": "<canvas id=\"c\"></canvas><div id=\"msg\">W/S 控制左球拍，上下键 控制右球拍</div>",
+    "css": "body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh}canvas{display:block;border:2px solid #333;border-radius:4px}#msg{color:#555;font-size:0.8rem;text-align:center;margin-top:8px}",
+    "js": "const c=document.getElementById('c'),x=c.getContext('2d');c.width=600;c.height=360;const PW=12,PH=70,BX=300,BY=180;let py1=150,py2=150,px=BX,py=BY,vx=3,vy=2,p1s=0,p2s=0,keys={};document.addEventListener('keydown',e=>keys[e.key]=true);document.addEventListener('keyup',e=>keys[e.key]=false);function reset(){px=BX;py=BY;vx=(Math.random()>0.5?1:-1)*3;vy=(Math.random()-0.5)*3};function tick(){x.fillStyle='rgba(0,0,0,0.25)';x.fillRect(0,0,600,360);x.strokeStyle='#333';x.beginPath();x.moveTo(300,0);x.lineTo(300,360);x.stroke();x.fillStyle='#fff';x.fillRect(0,py1,PW,PH);x.fillRect(588,py2,PW,PH);x.fillRect(px-8,py-8,16,16);px+=vx;py+=vy;if(py<8||py>344)vy*=-1;if(px<22&&py>py1&&py<py1+PH)vx=Math.abs(vx);if(px>568&&py>py2&&py<py2+PH)vx=-Math.abs(vx);if(px<0){p2s++;reset()}if(px>600){p1s++;reset()}x.fillStyle='#fff';x.font='bold 32px sans-serif';x.textAlign='center';x.fillText(p1s,150,50);x.fillText(p2s,450,50);if(keys['w']&&py1>0)py1-=4;if(keys['s']&&py1<290)py1+=4;if(keys['ArrowUp']&&py2>0)py2-=4;if(keys['ArrowDown']&&py2<290)py2+=4;requestAnimationFrame(tick)};tick();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 2800,
+    "likeCount": 234
+  },
+  {
+    "id": "flappy-bird",
+    "title": "飞翔的小鸟",
+    "description": "点击屏幕让小鸟上升，躲避管道障碍",
+    "category": "game",
+    "tags": ["游戏", "飞翔", "躲避"],
+    "html": "<canvas id=\"c\"></canvas><div id=\"over\" class=\"hidden\"><span id=\"final\">0</span><br><button id=\"restart\">再试一次</button></div>",
+    "css": "body{margin:0;background:#87CEEB;display:flex;align-items:center;justify-content:center;min-height:100vh}canvas{display:block;border-radius:8px}#over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border-radius:8px}#over.hidden{display:none}#over span{font-size:4rem;color:#fff;font-weight:bold}#restart{margin-top:16px;padding:8px 24px;background:#4CAF50;color:#fff;border:none;border-radius:6px;cursor:pointer}",
+    "js": "const c=document.getElementById('c'),x=c.getContext('2d');c.width=400;c.height=600;let bird={y:300,v:0},pipes=[],score=0,alive=true,gf=0;const G=0.4,FLY=-7,PW=50,GAP=150;function init(){bird={y:300,v:0};pipes=[];score=0;alive=true;gf=0;document.getElementById('over').classList.add('hidden');tick()};function addPipe(){const h=Math.random()*200+100;pipes.push({x:400,h,passed:false})};function tick(){if(!alive)return;gf++;bird.v+=G;bird.y+=bird.v;if(gf%90===0)addPipe();pipes.forEach(p=>p.x-=3);if(pipes[0]&&pipes[0].x<-PW)pipes.shift();pipes.forEach(p=>{if(!p.passed&&bird.y>0&&bird.y<600){if(p.x<230&&p.x>PW){score++;p.passed=true}}if(p.x<230&&p.x>PW&&(bird.y<p.h||bird.y>p.h+GAP)){alive=false}});if(bird.y>580)alive=false;x.fillStyle='#87CEEB';x.fillRect(0,0,400,600);x.fillStyle='#4CAF50';pipes.forEach(p=>{x.fillRect(p.x,0,PW,p.h);x.fillRect(p.x,p.h+GAP,PW,600)});x.fillStyle='#F9A825';x.beginPath();x.arc(60,bird.y,15,0,Math.PI*2);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(65,bird.y-3,5,0,Math.PI*2);x.fill();x.fillStyle='#fff';x.font='bold 32px sans-serif';x.textAlign='center';x.fillText(score,200,50);if(!alive){document.getElementById('over').classList.remove('hidden');document.getElementById('final').textContent=score;return}requestAnimationFrame(tick)};c.addEventListener('click',()=>{if(alive)bird.v=FLY});document.getElementById('restart').addEventListener('click',init);tick();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 4100,
+    "likeCount": 356
+  },
+  {
+    "id": "breakout-game",
+    "title": "打砖块",
+    "description": "鼠标或方向键控制球拍，打掉所有砖块通关",
+    "category": "game",
+    "tags": ["游戏", "打砖块", "经典"],
+    "html": "<canvas id=\"c\"></canvas><div id=\"msg\" class=\"hidden\">游戏结束！<button id=\"replay\">再来一局</button></div>",
+    "css": "body{margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh}canvas{display:block;border-radius:4px}#msg{position:absolute;text-align:center}",
+    "js": "const c=document.getElementById('c'),x=c.getContext('2d');c.width=500;c.height=500;let bx,by,bvx,bvy,paddle,pads,alive;const PW=80,PH=12,BALL=8;const COLS=8,ROWS=5,colors=['#f44','#f80','#ff0','#0f0','#0cf'];function init(){paddle={x:210,y:460,w:PW};bx=250;by=400;bvx=3*(Math.random()>0.5?1:-1);bvy=-3;alive=true;pads=[];for(let r=0;r<ROWS;r++)for(let col=0;col<COLS;col++)pads.push({x:col*60+10,y:r*25+40,w:55,h:18,color:colors[r]});tick()};function tick(){x.fillStyle='#1a1a1a';x.fillRect(0,0,500,500);pads.forEach(p=>{x.fillStyle=p.color;x.fillRect(p.x,p.y,p.w,p.h)});x.fillStyle='#fff';x.fillRect(paddle.x,paddle.y,paddle.w,PH);x.beginPath();x.arc(bx,by,BALL,0,Math.PI*2);x.fill();bx+=bvx;by+=bvy;if(bx<8||bx>492)bvx*=-1;if(by<8)bvy*=-1;if(bx>paddle.x&&bx<paddle.x+PW&&by>460&&by<470)bvy=-Math.abs(bvy);pads=pads.filter(p=>{if(bx>p.x&&bx<p.x+p.w&&by>p.y&&by<p.y+p.h){bvy*=-1;return false}return true});if(pads.length===0||by>492){alive=false;document.getElementById('msg').classList.remove('hidden');return}requestAnimationFrame(tick)};document.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();paddle.x=Math.max(0,Math.min(500-PW,e.clientX-r.left-PW/2))});document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')paddle.x=Math.max(0,paddle.x-15);if(e.key==='ArrowRight')paddle.x=Math.min(500-PW,paddle.x+15)});document.getElementById('replay').addEventListener('click',()=>{document.getElementById('msg').classList.add('hidden');init()});init();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 2600,
+    "likeCount": 198
+  },
+  {
+    "id": "sudoku-game",
+    "title": "数独游戏",
+    "description": "经典9x9数独，点击格子填入数字",
+    "category": "game",
+    "tags": ["游戏", "数独", "益智"],
+    "html": "<div id=\"wrap\"><div id=\"board\"></div><div id=\"pad\">123456789<span id=\"del\">x</span></div><div id=\"win\" class=\"hidden\">通关成功！</div></div>",
+    "css": "body{margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}#wrap{text-align:center}#board{display:grid;grid-template-columns:repeat(9,38px);gap:1px;background:#333;padding:4px;border:2px solid #667}#board div{background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:background 0.1s}#board div.fixed{background:#eee;color:#000}#board div.selected{background:#bce}#pad{display:flex;gap:4px;margin-top:12px;justify-content:center;flex-wrap:wrap;max-width:360px}#pad span,#del{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:#667eea;color:#fff;border-radius:6px;cursor:pointer;font-size:1.1rem;font-weight:bold}#del{background:#f5576c;width:60px}",
+    "js": "const board=document.getElementById('board');const PUZ=[[5,3,0,0,7,0,0,0,0],[6,0,0,1,9,5,0,0,0],[0,9,8,0,0,0,0,6,0],[8,0,0,0,6,0,0,0,3],[4,0,0,8,0,3,0,0,1],[7,0,0,0,2,0,0,0,6],[0,6,0,0,0,0,2,8,0],[0,0,0,4,1,9,0,0,5],[0,0,0,0,8,0,0,7,9]];let sol=PUZ.map(r=>[...r]),sel=null;function solve(g){const r=g.findIndex(row=>row.includes(0));if(r===-1)return true;for(let n=1;n<=9;n++){if(g[r].every((v,c)=>v!==n&&!g.some(row=>row[c]===n))){g[r][g[r].indexOf(0)]=n;if(solve(g))return true;g[r][g[r].indexOf(n)]=0}}return false};solve(sol);function render(){board.innerHTML='';PUZ.forEach((row,ri)=>row.forEach((v,ci)=>{const d=document.createElement('div');d.textContent=v||'';if(v)d.className='fixed';d.onclick=()=>{document.querySelectorAll('#board div').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');sel={ri,ci}};board.appendChild(d)}))};render();document.querySelectorAll('#pad span').forEach(b=>{b.onclick=()=>{if(!sel)return;if(PUZ[sel.ri][sel.ci])return;PUZ[sel.ri][sel.ci]=+b.textContent;render();if(PUZ.every(r=>r.every(v=>v)))document.getElementById('win').classList.remove('hidden')}});document.getElementById('del').onclick=()=>{if(!sel)return;PUZ[sel.ri][sel.ci]=0;render()};",
+    "authorName": "Web Effect Studio",
+    "viewCount": 1800,
+    "likeCount": 156
+  }
+]

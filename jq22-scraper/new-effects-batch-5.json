@@ -1,0 +1,135 @@
+[
+  {
+    "id": "card-shuffle",
+    "title": "洗牌动画",
+    "description": "扑克牌洗牌和发牌动画效果",
+    "category": "animation",
+    "tags": ["洗牌", "扑克", "动画"],
+    "html": "<div id=\"table\"><div id=\"deck\"></div><div id=\"hand\"></div><button id=\"shuffle\">洗牌</button><button id=\"deal\">发牌</button></div>",
+    "css": "body{margin:0;background:#0d5c0d;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}#table{position:relative;width:600px;height:400px;background:#1a6b1a;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,0.5)}#deck{position:absolute;left:50px;top:150px;width:60px;height:84px;background:#fff;border-radius:8px;border:2px solid #333;cursor:pointer}#hand{position:absolute;right:50px;top:100px;display:flex;gap:10px}button{position:absolute;bottom:20px;padding:10px 20px;background:#fff;border:none;border-radius:6px;cursor:pointer;font-size:1rem}#shuffle{left:150px}#deal{right:150px}.card{width:60px;height:84px;background:#fff;border-radius:8px;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:1.5rem;position:absolute;transition:all 0.3s}",
+    "js": "const suits=['♠','♥','♦','♣'];const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];let deck=[];function createDeck(){deck=[];suits.forEach(s=>ranks.forEach(r=>deck.push({suit:s,rank:r,color:s==='♥'||s==='♦'?'#f00':'#000'})));deck.sort(()=>Math.random()-0.5)}function renderDeck(){const deckEl=document.getElementById('deck');deckEl.innerHTML='';deck.forEach((card,i)=>{const el=document.createElement('div');el.className='card';el.style.left=50+i*0.5+'px';el.style.top=150-i*0.5+'px';el.style.background='#fff';el.innerHTML=`<span style=\"color:${card.color}\">${card.rank}${card.suit}</span>`;deckEl.appendChild(el)})}createDeck();document.getElementById('shuffle').onclick=()=>{createDeck();renderDeck()};document.getElementById('deal').onclick=()=>{if(deck.length===0)return;const card=deck.pop();const hand=document.getElementById('hand');const el=document.createElement('div');el.className='card';el.style.position='relative';el.innerHTML=`<span style=\"color:${card.color}\">${card.rank}${card.suit}</span>`;hand.appendChild(el)};",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "code-typing",
+    "title": "代码打字效果",
+    "description": "模拟程序员打代码的动画",
+    "category": "text",
+    "tags": ["代码", "打字", "动画"],
+    "html": "<div id=\"editor\"><div id=\"line-numbers\"></div><pre id=\"code\"></pre><span id=\"cursor\">|</span></div>",
+    "css": "body{margin:0;background:#1e1e1e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Fira Code',monospace}#editor{background:#252526;padding:20px;border-radius:8px;width:500px;height:300px;position:relative;overflow:hidden}#line-numbers{position:absolute;left:0;top:20px;width:30px;color:#858585;text-align:right;padding-right:10px}#code{color:#d4d4d4;margin-left:40px;white-space:pre-wrap;word-wrap:break-word}#cursor{color:#fff;animation:blink 1s infinite}@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}",
+    "js": "const code=`function hello() {
+  console.log('Hello World');
+  return true;
+}`;let i=0;const codeEl=document.getElementById('code');const lineNumbers=document.getElementById('line-numbers');function type(){if(i<code.length){codeEl.textContent+=code[i];i++;updateLineNumbers();setTimeout(type,50+Math.random()*100)}}function updateLineNumbers(){const lines=codeEl.textContent.split('\\n').length;lineNumbers.innerHTML=Array(lines).fill(0).map((_,i)=>i+1).join('<br>')}type();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "color-picker",
+    "title": "颜色选择器",
+    "description": "交互式颜色选择器，支持色相、饱和度、亮度调节",
+    "category": "ui",
+    "tags": ["颜色", "选择器", "UI"],
+    "html": "<div id=\"picker\"><div id=\"hue\"></div><div id=\"sv\"><div id=\"handle\"></div></div><div id=\"preview\"></div><div id=\"value\"></div></div>",
+    "css": "body{margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}#picker{background:#252526;padding:20px;border-radius:12px}#hue{width:200px;height:20px;background:linear-gradient(to right,red,yellow,lime,cyan,blue,magenta,red);border-radius:10px;margin-bottom:15px;cursor:pointer}#sv{width:200px;height:150px;background:linear-gradient(to bottom,transparent,#000),linear-gradient(to right,#fff,transparent);position:relative;cursor:pointer}#handle{width:12px;height:12px;border:2px solid #fff;border-radius:50%;position:absolute;transform:translate(-50%,-50%);box-shadow:0 0 5px rgba(0,0,0,0.5)}#preview{width:200px;height:50px;margin-top:15px;border-radius:8px}#value{color:#fff;text-align:center;margin-top:10px;font-family:monospace}",
+    "js": "let h=0,s=100,v=100;const hue=document.getElementById('hue');const sv=document.getElementById('sv');const handle=document.getElementById('handle');const preview=document.getElementById('preview');const value=document.getElementById('value');function hsvToRgb(h,s,v){s/=100;v/=100;const c=v*s;const x=c*(1-Math.abs((h/60)%2-1));const m=v-c;let r,g,b;if(h<60)[r,g,b]=[c,x,0];else if(h<120)[r,g,b]=[x,c,0];else if(h<180)[r,g,b]=[0,c,x];else if(h<240)[r,g,b]=[0,x,c];else if(h<300)[r,g,b]=[x,0,c];else[r,g,b]=[c,0,x];return[Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)]}function update(){const[r,g,b]=hsvToRgb(h,s,v);const color=`rgb(${r},${g},${b})`;preview.style.background=color;value.textContent=color;sv.style.background=`linear-gradient(to bottom,transparent,#000),linear-gradient(to right,hsl(${h},100%,50%),transparent)`}hue.addEventListener('click',e=>{const rect=hue.getBoundingClientRect();h=((e.clientX-rect.left)/rect.width)*360;update()});sv.addEventListener('click',e=>{const rect=sv.getBoundingClientRect();s=((e.clientX-rect.left)/rect.width)*100;v=100-((e.clientY-rect.top)/rect.height)*100;handle.style.left=e.clientX-rect.left+'px';handle.style.top=e.clientY-rect.top+'px';update()});update();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "confetti-cannon",
+    "title": "礼花彩带",
+    "description": "点击发射彩色纸屑礼花效果",
+    "category": "animation",
+    "tags": ["礼花", "彩带", "庆祝"],
+    "html": "<canvas id=\"c\"></canvas><p>点击屏幕发射礼花</p>",
+    "css": "body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;color:#fff}canvas{position:fixed;top:0;left:0}p{position:fixed;bottom:30px;z-index:10}",
+    "js": "const c=document.getElementById('c'),x=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;let particles=[];const colors=['#f44336','#e91e63','#9c27b0','#673ab7','#3f51b5','#2196f3','#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#cddc39','#ffeb3b','#ffc107','#ff9800','#ff5722'];function createConfetti(x,y){for(let i=0;i<100;i++){particles.push({x:x,y:y,vx:(Math.random()-0.5)*20,vy:(Math.random()-0.5)*20-10,gravity:0.5,color:colors[Math.floor(Math.random()*colors.length)],size:Math.random()*10+5,rotation:Math.random()*360,rotationSpeed:(Math.random()-0.5)*10,life:100})}}function draw(){x.clearRect(0,0,c.width,c.height);particles.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.rotation+=p.rotationSpeed;p.life--;x.save();x.translate(p.x,p.y);x.rotate(p.rotation*Math.PI/180);x.fillStyle=p.color;x.globalAlpha=p.life/100;x.fillRect(-p.size/2,-p.size/2,p.size,p.size);x.restore();if(p.life<=0||p.y>c.height)particles.splice(i,1)});requestAnimationFrame(draw)}document.addEventListener('click',e=>createConfetti(e.clientX,e.clientY));draw();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "cube-3d",
+    "title": "3D 旋转立方体",
+    "description": "可拖拽旋转的 3D 立方体",
+    "category": "animation",
+    "tags": ["3D", "立方体", "旋转"],
+    "html": "<div id=\"scene\"><div id=\"cube\"><div class=\"face front\">前</div><div class=\"face back\">后</div><div class=\"face right\">右</div><div class=\"face left\">左</div><div class=\"face top\">上</div><div class=\"face bottom\">下</div></div></div><p>拖拽旋转</p>",
+    "css": "body{margin:0;background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;color:#fff}#scene{width:200px;height:200px;perspective:600px}#cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.1s}.face{position:absolute;width:200px;height:200px;background:rgba(102,126,234,0.8);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:bold;color:#fff}.front{transform:rotateY(0deg)translateZ(100px)}.back{transform:rotateY(180deg)translateZ(100px)}.right{transform:rotateY(90deg)translateZ(100px)}.left{transform:rotateY(-90deg)translateZ(100px)}.top{transform:rotateX(90deg)translateZ(100px)}.bottom{transform:rotateX(-90deg)translateZ(100px)}p{margin-top:30px;color:#888}",
+    "js": "const cube=document.getElementById('cube');let isDragging=false,lastX,lastY,rotX=-30,rotY=45;document.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY});document.addEventListener('mouseup',()=>isDragging=false);document.addEventListener('mousemove',e=>{if(!isDragging)return;const deltaX=e.clientX-lastX;const deltaY=e.clientY-lastY;rotY+=deltaX*0.5;rotX-=deltaY*0.5;cube.style.transform=`rotateX(${rotX}deg)rotateY(${rotY}deg)`;lastX=e.clientX;lastY=e.clientY});cube.style.transform=`rotateX(${rotX}deg)rotateY(${rotY}deg)`;",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "dna-helix",
+    "title": "DNA 双螺旋",
+    "description": "旋转的 DNA 双螺旋结构动画",
+    "category": "animation",
+    "tags": ["DNA", "螺旋", "科学"],
+    "html": "<canvas id=\"c\"></canvas>",
+    "css": "body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh}canvas{display:block}",
+    "js": "const c=document.getElementById('c'),x=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;let angle=0;const pairs=['AT','TA','CG','GC','AT','TA','CG','GC','AT','TA','CG','GC'];function draw(){x.fillStyle='rgba(0,0,0,0.1)';x.fillRect(0,0,c.width,c.height);const cx=c.width/2,cy=c.height/2;for(let i=0;i<pairs.length;i++){const y=(i-pairs.length/2)*30;const x1=cx+Math.sin(angle+i*0.3)*100;const x2=cx+Math.sin(angle+i*0.3+Math.PI)*100;const scale1=(Math.sin(angle+i*0.3)+1)/2*0.5+0.5;const scale2=(Math.sin(angle+i*0.3+Math.PI)+1)/2*0.5+0.5;x.fillStyle=`rgba(255,100,100,${scale1})`;x.beginPath();x.arc(x1,cy+y,15*scale1,0,Math.PI*2);x.fill();x.fillStyle=`rgba(100,100,255,${scale2})`;x.beginPath();x.arc(x2,cy+y,15*scale2,0,Math.PI*2);x.fill();x.strokeStyle='rgba(255,255,255,0.3)';x.lineWidth=2;x.beginPath();x.moveTo(x1,cy+y);x.lineTo(x2,cy+y);x.stroke()}angle+=0.02;requestAnimationFrame(draw)}draw();",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "fisheye-menu",
+    "title": "鱼眼菜单",
+    "description": "Mac 风格鱼眼放大菜单效果",
+    "category": "ui",
+    "tags": ["菜单", "鱼眼", "Mac"],
+    "html": "<div id=\"dock\"><div class=\"item\">📧</div><div class=\"item\">🌐</div><div class=\"item\">💬</div><div class=\"item\">🎵</div><div class=\"item\">📷</div><div class=\"item\">⚙️</div></div>",
+    "css": "body{margin:0;background:linear-gradient(to bottom,#87CEEB,#E0F6FF);display:flex;align-items:flex-end;justify-content:center;min-height:100vh;font-family:sans-serif;padding-bottom:50px}#dock{display:flex;align-items:flex-end;gap:10px;padding:20px;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border-radius:20px;border:1px solid rgba(255,255,255,0.3)}.item{width:50px;height:50px;background:rgba(255,255,255,0.9);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 15px rgba(0,0,0,0.1)}.item:hover{transform:scale(1.5)translateY(-10px);margin:0 15px}",
+    "js": "",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "gradient-wave",
+    "title": "渐变波浪",
+    "description": "流动的渐变波浪背景",
+    "category": "animation",
+    "tags": ["渐变", "波浪", "背景"],
+    "html": "<div id=\"wave\"></div><div id=\"content\">Gradient Wave</div>",
+    "css": "body{margin:0;min-height:100vh;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-family:sans-serif;overflow:hidden}#wave{position:absolute;inset:0;background:linear-gradient(45deg,#667eea,#764ba2,#f093fb,#f5576c);background-size:400%400%;animation:gradient 15s ease infinite}@keyframes gradient{0%{background-position:0%50%}50%{background-position:100%50%}100%{background-position:0%50%}}#content{position:relative;z-index:10;color:#fff;font-size:4rem;font-weight:bold;text-shadow:0 4px 20px rgba(0,0,0,0.3)}",
+    "js": "",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "image-magnifier",
+    "title": "图片放大镜",
+    "description": "鼠标悬停显示放大区域",
+    "category": "ui",
+    "tags": ["图片", "放大镜", "悬停"],
+    "html": "<div id=\"container\"><img id=\"img\" src=\"https://picsum.photos/400/400\" alt=\"demo\"><div id=\"magnifier\"></div></div>",
+    "css": "body{margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}#container{position:relative;width:400px;height:400px;overflow:hidden;border-radius:12px}#img{width:100%;height:100%;object-fit:cover}#magnifier{position:absolute;width:150px;height:150px;border:3px solid #fff;border-radius:50%;box-shadow:0 0 20px rgba(0,0,0,0.5);background-repeat:no-repeat;display:none;pointer-events:none}",
+    "js": "const container=document.getElementById('container');const img=document.getElementById('img');const magnifier=document.getElementById('magnifier');const zoom=2;container.addEventListener('mousemove',e=>{const rect=container.getBoundingClientRect();const x=e.clientX-rect.left;const y=e.clientY-rect.top;magnifier.style.display='block';magnifier.style.left=x-75+'px';magnifier.style.top=y-75+'px';magnifier.style.backgroundImage=`url(${img.src})`;magnifier.style.backgroundSize=`${rect.width*zoom}px${rect.height*zoom}px`;magnifier.style.backgroundPosition=`-${x*zoom-75}px-${y*zoom-75}px`});container.addEventListener('mouseleave',()=>magnifier.style.display='none');",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  },
+  {
+    "id": "liquid-fill",
+    "title": "液体填充",
+    "description": "波浪形液体填充进度效果",
+    "category": "animation",
+    "tags": ["液体", "填充", "波浪"],
+    "html": "<div id=\"container\"><div id=\"liquid\"></div><div id=\"percent\">50%</div></div><input type=\"range\" id=\"slider\" min=\"0\" max=\"100\" value=\"50\">",
+    "css": "body{margin:0;background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}#container{width:200px;height:200px;border-radius:50%;background:#1a1a2e;position:relative;overflow:hidden;border:4px solid #667eea}#liquid{position:absolute;bottom:0;left:0;width:100%;height:50%;background:linear-gradient(to top,#667eea,#764ba2);transition:height 0.3s}#liquid::before{content:'';position:absolute;top:-10px;left:0;width:200%;height:20px;background:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C300,120 600,0 900,60 C1200,120 1200,60 1200,60 L1200,120 L0,120 Z' fill='%23667eea'/%3E%3C/svg%3E\");background-size:50%100%;animation:wave 3s linear infinite}#percent{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:bold;z-index:10}@keyframes wave{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}input{margin-top:30px;width:200px}",
+    "js": "const liquid=document.getElementById('liquid');const percent=document.getElementById('percent');const slider=document.getElementById('slider');slider.addEventListener('input',()=>{const val=slider.value;liquid.style.height=val+'%';percent.textContent=val+'%'});",
+    "authorName": "Web Effect Studio",
+    "viewCount": 0,
+    "likeCount": 0
+  }
+]
