@@ -1,6 +1,6 @@
 // CommentSystem.tsx - 评论系统
 import { useState, useEffect } from 'react'
-import { db } from '@/firebase'
+import { db } from '@/lib/firebase'
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore'
 
 interface Comment {
